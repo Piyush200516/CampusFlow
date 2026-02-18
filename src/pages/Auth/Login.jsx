@@ -39,22 +39,16 @@ const Login = () => {
       return;
     }
 
-    // ✅ All validation passed → save email for dashboard
+    // ✅ Save email for dashboard
     localStorage.setItem("studentEmail", email);
-
-    // If you connect to database in future:
-    // 1. Send login info to backend API
-    // fetch("/api/login", { method: "POST", body: JSON.stringify({ email, password }) })
-    //   .then(res => res.json())
-    //   .then(data => { navigate("/dashboard"); });
 
     // Redirect to dashboard
     navigate("/dashboard");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600">
-      <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border">
         <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">
           Student Login
         </h2>

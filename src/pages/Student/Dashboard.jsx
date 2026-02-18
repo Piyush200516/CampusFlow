@@ -43,19 +43,25 @@ export default function Dashboard() {
     { name: "TC", icon: Award },
     { name: "Attendance", icon: Clock },
     { name: "Placement Drives", icon: Users },
-    { name: "Mock Interviews", icon: Users },
+    { name: "Fee", icon: Users },
     { name: "Settings", icon: Settings },
   ];
 
   return (
     <div className="flex h-screen bg-gray-50">
-      
+
       {/* Sidebar */}
       <div className="fixed top-0 left-0 w-64 h-screen bg-white border-r flex flex-col justify-between p-4">
         <div>
-          <div className="mb-8">
-            <span className="font-bold text-xl">Portal</span>
-          </div>
+          <div className="mb-8 flex items-center space-x-2">
+  <img
+    src="/aitr-logo.jpg"
+    alt="AITR Logo"
+    className="h-8 w-auto object-contain"
+  />
+  <span className="font-bold text-xl">Portal</span>
+</div>
+
 
           <nav className="space-y-2">
             {links.map((link) => (
@@ -90,21 +96,16 @@ export default function Dashboard() {
       <div className="flex-1 ml-64 flex flex-col">
 
         {/* Top Navbar */}
-        <div className="fixed top--0.1 left-64 right-0 h-16 bg-white border-b flex items-center justify-between px-6 z-10">
-          
-          {/* Logo Left */}
+        <div className="fixed top-0 left-64 right-0 h-16 bg-white border-b flex items-center justify-between px-6 z-10">
+
           <div className="flex items-center space-x-3">
             <img
               src="/Acropolis-logo.png"
               alt="Acropolis Logo"
               className="h-10 w-auto object-contain"
             />
-            <span className="font-semibold text-gray-700">
-            .
-            </span>
           </div>
 
-          {/* Email Right */}
           <div className="text-gray-700 font-semibold">
             {studentEmail}
           </div>
@@ -112,28 +113,28 @@ export default function Dashboard() {
 
         {/* Page Content */}
         <div className="mt-16 p-6 overflow-y-auto">
-          {/* Dashboard Header */}
-<div className="mb-6">
-  <h1 className="text-2xl font-bold text-gray-800">
-    Student Dashboard
-  </h1>
-  {/* Dashboard */}
-  <p className="text-gray-500 mt-1">
-    Manage your placement activities and profile
-  </p>
-</div>
-  {/* Dashboard */}
- <div className="bg-blue-100 border-l-4 border-blue-500 p-4 rounded-md mb-6">
-  <h2 className="font-semibold text-blue-800">
-    🚀 New Update!
-  </h2>
-  <p className="text-blue-700 mt-1">
-    The Certificates section is now unlocked. CAF approval is no longer required to access it.
-  </p>
-</div>
 
+          {/* Header */}
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-800">
+              Student Dashboard
+            </h1>
+            <p className="text-gray-500 mt-1">
+              Manage your College / placement activities and profile
+            </p>
+          </div>
 
-          {/* CAF Status */}
+          {/* Update Box */}
+          <div className="bg-blue-100 border-l-4 border-blue-500 p-4 rounded-md mb-6">
+            <h2 className="font-semibold text-blue-800">
+              🚀 New Update!
+            </h2>
+            <p className="text-blue-700 mt-1">
+              The Certificates section is now unlocked. Approval is no longer required to access it.
+            </p>
+          </div>
+
+          {/* Information Form Status */}
           <div
             className={`p-4 rounded-md mb-6 ${
               cafStatus.approved
@@ -142,13 +143,13 @@ export default function Dashboard() {
             }`}
           >
             <h2 className="font-semibold text-lg">
-              CAF Form {cafStatus.approved ? "Approved" : "Pending"}
+              Information Form {cafStatus.approved ? "Approved" : "Pending"}
             </h2>
 
             <p className="text-gray-600 mt-1">
               {cafStatus.approved
-                ? "Congratulations! Your CAF form has been approved."
-                : "Your CAF form is pending approval."}
+                ? "Congratulations! Your Information form has been approved."
+                : "Your Information form is pending approval."}
             </p>
 
             {cafStatus.approved && (
@@ -161,28 +162,90 @@ export default function Dashboard() {
               </a>
             )}
           </div>
+          {/* leave from  */}
+          <div
+            className={`p-4 rounded-md mb-6 ${
+              cafStatus.approved
+                ? "bg-green-100 border-l-4 border-green-500"
+                : "bg-gray-100 border-l-4 border-gray-400"
+            }`}
+          >
+            <h2 className="font-semibold text-lg">
+              leave from Application
+            </h2>
 
-          {/* Sections */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              "Attendance",
-              "Internships",
-              "Placement Drives",
-              "Mock Interviews",
-            ].map((section) => (
-              <div
-                key={section}
-                className="bg-white p-4 rounded-md shadow"
+            <p className="text-gray-600 mt-1">
+              {cafStatus.approved
+                ? "leave from for Download."
+                : "."}
+            </p>
+
+            {cafStatus.approved && (
+              <a
+                href="/leave-format.pdf"
+                download="Download_Format.pdf"
+                className="mt-3 inline-block px-4 py-2 bg-white border rounded-md hover:bg-gray-50"
               >
-                <h3 className="font-semibold mb-2">{section}</h3>
-                <p className="text-gray-500 text-sm">
-                  Manage your {section.toLowerCase()}.
-                </p>
-                <button className="mt-2 px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600">
-                  Access
-                </button>
+                Download Leave From Format
+              </a>
+            )}
+          </div>
+          
+          {/* Dashboard Cards Section (Screenshot Style) */}
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition">
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-lg font-semibold">Attendance</h3>
+                <Clock className="h-5 w-5 text-gray-600" />
               </div>
-            ))}
+              <p className="text-gray-500 text-sm mb-4">
+                Mark your attendance for active sessions.
+              </p>
+              <button className="w-full border rounded-md py-2 hover:bg-gray-100">
+                Access
+              </button>
+            </div>
+
+            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition">
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-lg font-semibold">Internships / Job</h3>
+                <Briefcase className="h-5 w-5 text-gray-600" />
+              </div>
+              <p className="text-gray-500 text-sm mb-4">
+                Manage your internship / Job records and PPO details.
+              </p>
+              <button className="w-full border rounded-md py-2 hover:bg-gray-100">
+                Access
+              </button>
+            </div>
+
+            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition">
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-lg font-semibold">Fee</h3>
+                <Users className="h-5 w-5 text-gray-600" />
+              </div>
+              <p className="text-gray-500 text-sm mb-4">
+                View and Submit for Fee.
+              </p>
+              <button className="w-full border rounded-md py-2 hover:bg-gray-100">
+                Access
+              </button>
+            </div>
+
+            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition">
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-lg font-semibold">TC</h3>
+                <Users className="h-5 w-5 text-gray-600" />
+              </div>
+              <p className="text-gray-500 text-sm mb-4">
+                Apply for TC
+              </p>
+              <button className="w-full border rounded-md py-2 hover:bg-gray-100">
+                Access
+              </button>
+            </div>
+
           </div>
 
         </div>
