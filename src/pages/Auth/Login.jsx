@@ -1,8 +1,56 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    // ✅ Email Validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.(com|in|org)$/;
+    if (!emailPattern.test(email)) {
+      alert("Invalid email format! Must contain @ and .com/.in/.org");
+      return;
+    }
+
+    // ✅ Password Validation
+    const numberCount = (password.match(/\d/g) || []).length;
+    const hasCapital = /[A-Z]/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters long");
+      return;
+    }
+    if (numberCount < 3) {
+      alert("Password must contain at least 3 numbers");
+      return;
+    }
+    if (!hasCapital) {
+      alert("Password must contain at least 1 capital letter");
+      return;
+    }
+    if (!hasSpecial) {
+      alert("Password must contain at least 1 special character");
+      return;
+    }
+
+    // ✅ All validation passed → save email for dashboard
+    localStorage.setItem("studentEmail", email);
+
+    // If you connect to database in future:
+    // 1. Send login info to backend API
+    // fetch("/api/login", { method: "POST", body: JSON.stringify({ email, password }) })
+    //   .then(res => res.json())
+    //   .then(data => { navigate("/dashboard"); });
+
+    // Redirect to dashboard
+    navigate("/dashboard");
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600">
@@ -11,13 +59,16 @@ const Login = () => {
           Student Login
         </h2>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleLogin}>
           <div>
             <label className="block text-gray-600 mb-1">Email</label>
             <input
               type="email"
               placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              required
             />
           </div>
 
@@ -27,7 +78,10 @@ const Login = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                required
               />
               <span
                 onClick={() => setShowPassword(!showPassword)}
@@ -39,12 +93,12 @@ const Login = () => {
           </div>
 
           <div className="text-right">
-            <a href="#" className="text-sm text-blue-600 hover:underline">
-                   <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline">
-                      Forgot Password?
-                   </Link>
-
-            </a>
+            <Link
+              to="/forgot-password"
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Forgot Password?
+            </Link>
           </div>
 
           <button
@@ -57,13 +111,12 @@ const Login = () => {
 
         <p className="text-center text-sm mt-6 text-gray-600">
           Don't have an account?{" "}
-          <span className="text-blue-600 cursor-pointer hover:underline">
-             
-             <Link to="/signup" className="text-blue-600 hover:underline">
-                 Sign Up
-             </Link>
-
-          </span>
+          <Link
+            to="/signup"
+            className="text-blue-600 cursor-pointer hover:underline"
+          >
+            Sign Up
+          </Link>
         </p>
       </div>
     </div>
