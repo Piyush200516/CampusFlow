@@ -90,7 +90,7 @@ export default function Dashboard() {
       <div className="flex-1 ml-64 flex flex-col">
 
         {/* Top Navbar */}
-        <div className="fixed top-0 left-64 right-0 h-16 bg-white border-b flex items-center justify-between px-6 z-10">
+        <div className="fixed top--0.1 left-64 right-0 h-16 bg-white border-b flex items-center justify-between px-6 z-10">
           
           {/* Logo Left */}
           <div className="flex items-center space-x-3">
@@ -100,7 +100,7 @@ export default function Dashboard() {
               className="h-10 w-auto object-contain"
             />
             <span className="font-semibold text-gray-700">
-              Student Portal
+            .
             </span>
           </div>
 
@@ -112,7 +112,27 @@ export default function Dashboard() {
 
         {/* Page Content */}
         <div className="mt-16 p-6 overflow-y-auto">
-          
+          {/* Dashboard Header */}
+<div className="mb-6">
+  <h1 className="text-2xl font-bold text-gray-800">
+    Student Dashboard
+  </h1>
+  {/* Dashboard */}
+  <p className="text-gray-500 mt-1">
+    Manage your placement activities and profile
+  </p>
+</div>
+  {/* Dashboard */}
+ <div className="bg-blue-100 border-l-4 border-blue-500 p-4 rounded-md mb-6">
+  <h2 className="font-semibold text-blue-800">
+    🚀 New Update!
+  </h2>
+  <p className="text-blue-700 mt-1">
+    The Certificates section is now unlocked. CAF approval is no longer required to access it.
+  </p>
+</div>
+
+
           {/* CAF Status */}
           <div
             className={`p-4 rounded-md mb-6 ${
