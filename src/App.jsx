@@ -1,19 +1,60 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
 import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Register";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
+
+import Sidebar from "./pages/Student/Sidebar";
+import Topbar from "./pages/Student/Topbar";
+
 import StudentDashboard from "./pages/Student/Dashboard";
+import Internships from "./pages/Student/Internships";
+import Attendance from "./pages/Student/Attendance";
+import Fee from "./pages/Student/Fee";
+
+import { Outlet } from "react-router-dom";
+
+
+// ✅ Layout Component (Common Navbar)
+function Layout() {
+  return (
+    <div style={{ display: "flex" }}>
+      <Sidebar />
+
+      <div style={{ flex: 1 }}>
+        <Topbar />
+
+        <div style={{ padding: "20px" }}>
+          <Outlet />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 function App() {
   return (
     <Router>
       <Routes>
+
+        {/* Public Routes */}
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/dashboard" element={<StudentDashboard />} />
+
+        {/* Protected / Student Routes with Common Navbar */}
+        <Route path="/" element={<Layout />}>
+          <Route path="dashboard" element={<StudentDashboard />} />
+          <Route path="internships" element={<Internships />} />
+          <Route path="attendance" element={<Attendance />} />
+          <Route path="fee" element={<Fee />} />
+        </Route>
+
+        {/* Fallback */}
         <Route path="*" element={<Navigate to="/login" />} />
+
       </Routes>
     </Router>
   );
