@@ -83,4 +83,4 @@ The Fee Module allows students to:
 ## 📌 Author
 
 Developed by: ** . **  
-B.Tech CSE  
+B.Tech CSE  in AITR

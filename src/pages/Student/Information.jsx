@@ -65,7 +65,7 @@ export default function CampusApplicationForm() {
         className="w-full max-w-6xl bg-white p-8 rounded-2xl shadow space-y-10"
       >
         <h1 className="text-3xl font-bold text-center">
-          Campus Application Form (CAF)
+          Student Information Application Form (SIAF)
         </h1>
 
         <SectionTitle title="Personal Details" />
@@ -115,7 +115,7 @@ function ApplicationPreview({ form, onEdit }) {
 
         <div className="flex justify-between items-center print:hidden">
           <h1 className="text-2xl font-bold">
-            Campus Application Form (CAF)
+            Student Information Application Form (SIAF)
           </h1>
 
           <div className="space-x-3">
