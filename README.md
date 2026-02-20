@@ -1,64 +1,86 @@
-# 🎓 CampusFlow – Project Progress Update
+# 🎓 Campus Management System (CMS)
 
-## 📅 Work Completed Today (17-02-2026)
-
-Today we completed the basic **Authentication Pages UI**:
-
-* ✅ **Login Page** (Student Sign In)
-* ✅ **Signup Page** (Create Account)
-* ✅ **Forgot Password Page**
+A full-stack Campus Management System designed to manage academic and administrative activities for Students, CDC, Department, and College Student Section.
 
 ---
 
-## 📊 Current Project Status
+## 🚀 Project Status
 
-* 🔹 Authentication Pages UI Completed
-* 🔹 Routing Connected Between Pages
-
-### 🚀 Overall Project Completion: **15% Done**
-
----
-
-## 🔜 Next Steps
-
-* 🔧 Form Validation Improvements
-* ⚙ Backend Setup (Node.js + Express)
-* 🗄 Database Integration (MongoDB)
-* 📊 Dashboard UI (Student Panel)
-* 👥 Role-based Login (Student / Department / Admin/ CDC)
+🟢 Student Dashboard – 80-90% Completed  
+🟡 CDC Panel – In Progress  
+🟡 Department Panel – Planned  
+🟡 College Student Section – Planned  
 
 ---
 
-👨‍💻 **Developed by:** 
-🏫 **Project:** CampusFlow 
+## 👨‍🎓 Student Dashboard Features
 
+The Student Module includes:
 
-## 📅 Update – 18 Feb 2026
-
-### ✅ Student Dashboard Completed
-- Sidebar Navigation Added
-- Top Navbar with Logo and Student Email
-- CAF Status Section (Approved / Pending)
-- Quick Access Sections (Attendance, Internships, Placement Drives, Mock Interviews)
-- Logout Functionality Added
-
-### ✅ Login Page Updated
-- UI Improvements
-- Email Display After Login
-- LocalStorage Integration for Authentication
-- Redirect to Student Dashboard After Login
-
-### ✅ UI Enhancements
-- Acropolis Logo Added (Navbar Left Side)
-- Responsive Layout Using Tailwind CSS
-- Clean Professional Dashboard Design
+- 📊 Student Dashboard (Overview Page)
+- 📝 Information Form
+- 💼 Internships / Jobs Section
+- 💰 Fee Management System
+- 📅 Attendance Tracking
+- 🎯 Placement Drives
+- 📄 TC (Transfer Certificate) Application System
+- ⚙️ Settings (Profile, MFA, Change Password)
 
 ---
 
-## 🚀 Current Project Progress
+## 💰 Fee Management System
 
-🔹 Authentication System – Completed  
-🔹 Student Dashboard UI – Completed  
-🔹 Logo & Layout Integration – Completed  
+The Fee Module allows students to:
 
-### 📊 Overall Progress: 25% Completed Frond-end
+- View total academic fees
+- Track paid and pending amounts
+- Check installment details
+- View due dates
+- Monitor payment status (Paid / Pending)
+- Print fee summary (optional feature)
+
+---
+
+## 🔐 TC Application Workflow
+
+1. Student applies for TC  
+2. Status: Pending Verification  
+3. Verified by College Student Section  
+4. Final Approval  
+5. TC Download Available  
+
+---
+
+## 🛠 Tech Stack
+
+- ⚛️ React.js
+- 🎨 Tailwind CSS
+- 🔁 React Router
+- 💾 LocalStorage (Temporary Data Persistence)
+- 🧩 Component-Based Architecture
+
+---
+
+## 🎯 Future Improvements
+
+- 🔐 Role-Based Authentication
+- 🌐 Backend Integration
+- 💳 Online Fee Payment Gateway Integration
+- 📄 Auto-generated PDF Receipts
+- 📊 Admin & CDC Dashboards
+- 🔒 Protected Routes
+
+---
+
+## 🌟 Key Highlights
+
+- Modern & Clean Dashboard UI
+- Dynamic Fee Status System
+- TC Verification Workflow
+- Role-Based Module Planning
+- Print Optimized Documents
+
+## 📌 Author
+
+Developed by: ** . **  
+B.Tech CSE  
