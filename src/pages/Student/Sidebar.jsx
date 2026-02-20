@@ -16,7 +16,7 @@ export default function Sidebar() {
 
   const menuItems = [
     { name: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} /> },
-    { name: "Information Form", path: "/caf", icon: <FileText size={18} /> },
+    { name: "Information Form", path: "/Information", icon: <FileText size={18} /> },
     { name: "Internships", path: "/internships", icon: <Briefcase size={18} /> },
     { name: "Fee", path: "/Fee", icon: <Award size={18} /> },
     { name: "Attendance", path: "/attendance", icon: <Clock size={18} /> },

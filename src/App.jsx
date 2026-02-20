@@ -13,6 +13,7 @@ import Attendance from "./pages/Student/Attendance";
 import Fee from "./pages/Student/Fee";
 import Plackment from "./pages/Student/Plackment";
 import FeePayment from "./pages/Student/FeePayment";
+import Information from "./pages/Student/Information";
 
 
 import { Outlet } from "react-router-dom";
@@ -50,6 +51,7 @@ function App() {
 {/* Protected / Student Routes with Common Navbar */}
         <Route path="/" element={<Layout />}>
           <Route path="dashboard" element={<StudentDashboard />} />
+          <Route path="Information" element={<Information />} />
           <Route path="internships" element={<Internships />} />
           <Route path="attendance" element={<Attendance />} />
           <Route path="fee" element={<Fee />} />
