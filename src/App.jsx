@@ -11,6 +11,9 @@ import StudentDashboard from "./pages/Student/Dashboard";
 import Internships from "./pages/Student/Internships";
 import Attendance from "./pages/Student/Attendance";
 import Fee from "./pages/Student/Fee";
+import Plackment from "./pages/Student/Plackment";
+import FeePayment from "./pages/Student/FeePayment";
+
 
 import { Outlet } from "react-router-dom";
 
@@ -44,12 +47,14 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        {/* Protected / Student Routes with Common Navbar */}
+{/* Protected / Student Routes with Common Navbar */}
         <Route path="/" element={<Layout />}>
           <Route path="dashboard" element={<StudentDashboard />} />
           <Route path="internships" element={<Internships />} />
           <Route path="attendance" element={<Attendance />} />
           <Route path="fee" element={<Fee />} />
+          <Route path="Plackment" element={<Plackment />} />
+          <Route path="pay-fee" element={<FeePayment />} />
         </Route>
 
         {/* Fallback */}

@@ -18,9 +18,9 @@ export default function Sidebar() {
     { name: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} /> },
     { name: "Information Form", path: "/caf", icon: <FileText size={18} /> },
     { name: "Internships", path: "/internships", icon: <Briefcase size={18} /> },
-    { name: "Fee", path: "/certificates", icon: <Award size={18} /> },
+    { name: "Fee", path: "/Fee", icon: <Award size={18} /> },
     { name: "Attendance", path: "/attendance", icon: <Clock size={18} /> },
-    { name: "Placement Drives", path: "/placements", icon: <Rocket size={18} /> },
+    { name: "Placement Drives", path: "/Plackment", icon: <Rocket size={18} /> },
     { name: "TC", path: "/mock", icon: <Users size={18} /> },
     { name: "Settings", path: "/settings", icon: <Settings size={18} /> },
   ];
