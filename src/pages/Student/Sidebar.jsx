@@ -21,7 +21,7 @@ export default function Sidebar() {
     { name: "Fee", path: "/Fee", icon: <Award size={18} /> },
     { name: "Attendance", path: "/attendance", icon: <Clock size={18} /> },
     { name: "Placement Drives", path: "/Plackment", icon: <Rocket size={18} /> },
-    { name: "TC", path: "/mock", icon: <Users size={18} /> },
+    { name: "TC", path: "/TC", icon: <Users size={18} /> },
     { name: "Settings", path: "/settings", icon: <Settings size={18} /> },
   ];
 

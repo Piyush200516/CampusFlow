@@ -14,6 +14,9 @@ import Fee from "./pages/Student/Fee";
 import Plackment from "./pages/Student/Plackment";
 import FeePayment from "./pages/Student/FeePayment";
 import Information from "./pages/Student/Information";
+import TC from "./pages/Student/TC";
+import Settings from "./pages/Student/Settings";
+
 
 
 import { Outlet } from "react-router-dom";
@@ -54,10 +57,11 @@ function App() {
           <Route path="Information" element={<Information />} />
           <Route path="internships" element={<Internships />} />
           <Route path="attendance" element={<Attendance />} />
-          <Route path="fee" element={<Fee />} />
+<Route path="fee" element={<Fee />} />
           <Route path="Plackment" element={<Plackment />} />
-          <Route path="pay-fee" element={<FeePayment />} />
-        </Route>
+          <Route path="TC" element={<TC />} />
+          <Route path="/settings" element={<Settings />} />
+         </Route>
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/login" />} />
