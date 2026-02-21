@@ -1,49 +1,48 @@
-//9️⃣ 🧑‍🏫 Faculty Contact Directory
-//HOD, Subject teachers, CDC staff, Student section contacts 
-import React from "react";
 import {
-  FaPhoneAlt,
-  FaEnvelope,
-  FaUserTie,
-  FaChalkboardTeacher,
-  FaUsers,
-} from "react-icons/fa";
+  Phone,
+  Mail,
+  User,
+  BookOpen,
+  Users,
+  Info,
+  Building2,
+  GraduationCap
+} from "lucide-react";
 
 const ContactCard = ({ name, role, email, phone, image }) => {
   return (
-    <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg p-5 flex items-center gap-5 hover:shadow-xl transition-all duration-300 border border-gray-100">
-      
+    <div className="bg-white p-5 rounded-xl border shadow-sm hover:shadow-md transition flex items-center gap-4">
       <img
         src={image}
         alt={name}
-        className="w-24 h-24 rounded-xl object-cover shadow-md"
+        className="w-16 h-16 rounded-lg object-cover"
       />
 
-      <div className="flex-1">
-        <h3 className="text-lg font-semibold text-gray-800">{name}</h3>
-        <p className="text-sm text-gray-500 mb-3">{role}</p>
+      <div className="flex-1 min-w-0">
+        <h3 className="font-semibold text-gray-800 truncate">{name}</h3>
+        <p className="text-sm text-gray-500 mb-2">{role}</p>
 
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-600 truncate">
             {email}
           </span>
 
-          <div className="flex gap-3">
-            {/* Direct Call */}
-            <a
-              href={`tel:${phone}`}
-              className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg shadow-md"
+          <div className="flex gap-2">
+            <button
+              onClick={() => window.open(`tel:${phone}`, '_self')}
+              className="bg-blue-50 hover:bg-blue-100 text-blue-600 p-2 rounded-lg transition cursor-pointer"
+              title="Call"
             >
-              <FaPhoneAlt size={14} />
-            </a>
+              <Phone size={14} />
+            </button>
 
-            {/* Direct Mail */}
-            <a
-              href={`mailto:${email}`}
-              className="bg-orange-500 hover:bg-orange-600 text-white p-2 rounded-lg shadow-md"
+            <button
+              onClick={() => window.open(`mailto:${email}`, '_blank')}
+              className="bg-orange-50 hover:bg-orange-100 text-orange-600 p-2 rounded-lg transition cursor-pointer"
+              title="Email"
             >
-              <FaEnvelope size={14} />
-            </a>
+              <Mail size={14} />
+            </button>
           </div>
         </div>
       </div>
@@ -53,17 +52,17 @@ const ContactCard = ({ name, role, email, phone, image }) => {
 
 const Section = ({ title, icon, children }) => {
   return (
-    <div className="bg-gradient-to-r from-gray-100 to-gray-200 p-8 rounded-3xl shadow-inner mb-10">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="bg-blue-600 text-white p-3 rounded-xl shadow-md">
+    <div className="mb-8">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="bg-blue-600 text-white p-2 rounded-lg">
           {icon}
         </div>
-        <h2 className="text-2xl font-semibold text-gray-800">
+        <h2 className="text-xl font-semibold text-gray-800">
           {title}
         </h2>
       </div>
 
-      <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
+      <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-4">
         {children}
       </div>
     </div>
@@ -72,22 +71,30 @@ const Section = ({ title, icon, children }) => {
 
 const Administrative_Features = () => {
   return (
-    <div className="min-h-screen bg-gray-200 p-10">
-      
+    <div className="p-6 bg-gray-50 min-h-screen">
+
       {/* Page Title */}
-      <div className="mb-12">
-        <h1 className="text-3xl font-bold text-gray-800">
-          Faculty Contact Directory
-        </h1>
-        <p className="text-gray-500 mt-2">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">Faculty Contact Directory</h1>
+        <p className="text-gray-500 mt-1">
           Administrative Contacts & Academic Staff Information
         </p>
+      </div>
+
+      {/* Info Banner */}
+      <div className="bg-blue-50 border-l-4 border-blue-600 rounded-xl p-4 mb-6 flex items-start gap-3">
+        <Info className="text-blue-600 flex-shrink-0 mt-0.5" size={18} />
+        <div>
+          <p className="text-gray-700 text-sm">
+            Click the phone or email icons to directly call or email the respective faculty/staff members.
+          </p>
+        </div>
       </div>
 
       {/* HOD */}
       <Section
         title="Heads of Departments (HOD)"
-        icon={<FaUserTie size={20} />}
+        icon={<User size={18} />}
       >
         <ContactCard
           name="Dr. Suresh Sharma"
@@ -115,7 +122,7 @@ const Administrative_Features = () => {
       {/* Subject Teachers */}
       <Section
         title="Subject Teachers"
-        icon={<FaChalkboardTeacher size={20} />}
+        icon={<BookOpen size={18} />}
       >
         <ContactCard
           name="Prof. Neha Singh"
@@ -141,8 +148,8 @@ const Administrative_Features = () => {
       </Section>
 
       {/* Bottom Sections */}
-      <div className="grid lg:grid-cols-2 gap-10">
-        <Section title="CDC Staff" icon={<FaUsers size={20} />}>
+      <div className="grid lg:grid-cols-2 gap-6">
+        <Section title="CDC Staff" icon={<Building2 size={18} />}>
           <ContactCard
             name="Mr. Rakesh Joshi"
             role="Placement Officer"
@@ -161,7 +168,7 @@ const Administrative_Features = () => {
 
         <Section
           title="Student Section Contacts"
-          icon={<FaUsers size={20} />}
+          icon={<GraduationCap size={18} />}
         >
           <ContactCard
             name="Mr. Anil Kumar"

@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   FileText,
@@ -8,11 +8,23 @@ import {
   Rocket,
   Users,
   Settings,
-  LogOut
+  LogOut,
+  PanelLeftClose,
+  PanelLeft
 } from "lucide-react";
+import { useDarkMode } from "../../context/DarkModeContext";
 
-export default function Sidebar() {
+export default function Sidebar({ isCollapsed, onToggle }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { darkMode } = useDarkMode();
+
+  const handleLogout = () => {
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("isLoggedIn");
+    navigate("/");
+  };
 
   const menuItems = [
     { name: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} /> },
@@ -29,11 +41,28 @@ export default function Sidebar() {
   ]
 
   return (
-    <div className="w-64 h-screen bg-gray-100 flex flex-col justify-between p-4 border-r">
+    <div className={`h-screen flex flex-col justify-between p-4 border-r transition-all duration-300 ${
+      darkMode ? "bg-zinc-800 border-zinc-700" : "bg-gray-100"
+    } ${isCollapsed ? "w-16" : "w-64"}`}>
 
-      {/* Logo */}
+        {/* Logo & Toggle Button */}
       <div>
-        <h2 className="text-xl font-bold mb-6">Portal</h2>
+        <div className="flex items-center justify-between mb-6">
+          <button
+            onClick={onToggle}
+            className={`flex items-center gap-2 p-2 rounded-lg transition-colors duration-300 ${
+              darkMode ? "hover:bg-gray-700 text-gray-300" : "hover:bg-gray-200 text-gray-700"
+            }`}
+            title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+          >
+            {!isCollapsed && (
+              <h2 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>
+                Portal
+              </h2>
+            )}
+            {isCollapsed ? <PanelLeft size={20} /> : <PanelLeftClose size={20} />}
+          </button>
+        </div>
 
         <nav className="flex flex-col gap-2">
           {menuItems.map((item) => (
@@ -43,13 +72,15 @@ export default function Sidebar() {
               className={`flex items-center gap-3 px-4 py-2 rounded-lg transition
                 ${
                   location.pathname === item.path
-                    ? "bg-gray-300 font-semibold"
-                    : "hover:bg-gray-200"
+                    ? darkMode ? "bg-gray-700 font-semibold text-white" : "bg-gray-300 font-semibold text-gray-900"
+                    : darkMode ? "hover:bg-gray-700 text-gray-300" : "hover:bg-gray-200 text-gray-700"
                 }
+                ${isCollapsed ? "justify-center" : ""}
               `}
+              title={isCollapsed ? item.name : ""}
             >
               {item.icon}
-              {item.name}
+              {!isCollapsed && item.name}
             </Link>
           ))}
         </nav>
@@ -57,9 +88,18 @@ export default function Sidebar() {
 
       {/* Bottom Section */}
       <div>
-        <button className="w-full flex items-center gap-2 bg-white border rounded-lg py-2 px-4 hover:bg-gray-200">
+        <button 
+          onClick={handleLogout}
+          className={`w-full flex items-center gap-2 border rounded-lg py-2 px-4 transition-colors duration-300 ${
+            darkMode 
+              ? "bg-gray-700 border-gray-600 hover:bg-gray-600 text-white" 
+              : "bg-white border-gray-300 hover:bg-gray-200 text-gray-700"
+          } ${isCollapsed ? "justify-center px-2" : ""}
+          `}
+          title={isCollapsed ? "Logout" : ""}
+        >
           <LogOut size={18} />
-          Logout
+          {!isCollapsed && "Logout"}
         </button>
       </div>
     </div>

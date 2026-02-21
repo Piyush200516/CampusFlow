@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./pages/Auth/Login";
@@ -20,17 +21,24 @@ import Dashboard_Analytics from "./pages/Student/Dashboard_Analytics";
 import Administrative_Features from "./pages/Student/Administrative_Features";
 
 import { Outlet } from "react-router-dom";
+import { useDarkMode } from "./context/DarkModeContext";
 
 // ✅ Layout Component (Common Navbar)
 function Layout() {
+  const { darkMode } = useDarkMode();
+
   return (
-    <div style={{ display: "flex" }}>
+    <div style={{ display: "flex" }} className={`transition-colors duration-300 ${
+      darkMode ? "bg-neutral-900" : "bg-gray-50"
+    }`}>
       <Sidebar />
 
       <div style={{ flex: 1 }}>
         <Topbar />
 
-        <div style={{ padding: "20px" }}>
+        <div style={{ padding: "20px" }} className={`transition-colors duration-300 ${
+          darkMode ? "bg-neutral-900" : "bg-gray-50"
+        }`}>
           <Outlet />
         </div>
       </div>

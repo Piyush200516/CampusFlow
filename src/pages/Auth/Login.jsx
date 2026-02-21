@@ -5,6 +5,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userRole, setUserRole] = useState("student");
   const navigate = useNavigate();
 
   const handleLogin = (e) => {
@@ -39,19 +40,44 @@ const Login = () => {
       return;
     }
 
-    // ✅ Save email for dashboard
-    localStorage.setItem("studentEmail", email);
+    // ✅ Save user info to localStorage
+    localStorage.setItem("userEmail", email);
+    localStorage.setItem("userRole", userRole);
+    localStorage.setItem("isLoggedIn", "true");
 
-    // Redirect to dashboard
-    navigate("/dashboard");
+    // ✅ Redirect based on role
+    if (userRole === "student") {
+      navigate("/dashboard");
+    } else if (userRole === "cdc") {
+      navigate("/cdc/dashboard");
+    } else if (userRole === "department") {
+      navigate("/department/dashboard");
+    } else if (userRole === "fee") {
+      navigate("/fee/dashboard");
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border">
         <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">
-          Student Login
+          Campus Login
         </h2>
+
+        {/* Role Selection */}
+        <div className="mb-4">
+          <label className="block text-gray-600 mb-1">Login As</label>
+          <select
+            value={userRole}
+            onChange={(e) => setUserRole(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          >
+            <option value="student">Student</option>
+            <option value="cdc">CDC (Placement Cell)</option>
+            <option value="department">Department</option>
+            <option value="fee">Fee Department</option>
+          </select>
+        </div>
 
         <form className="space-y-4" onSubmit={handleLogin}>
           <div>

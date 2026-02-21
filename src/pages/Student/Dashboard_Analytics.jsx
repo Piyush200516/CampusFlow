@@ -67,7 +67,6 @@ export default function Dashboard_Analytics() {
             </div>
             <h2 className="font-semibold text-gray-600">Attendance</h2>
           </div>
-
           <p className="text-3xl font-bold mt-4 text-gray-800">
             {attendance}%
           </p>
