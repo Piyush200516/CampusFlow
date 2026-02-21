@@ -101,6 +101,9 @@ function App() {
         {/* Fee Department Routes */}
         <Route path="/fee" element={<Fee_Layout />}>
           <Route path="dashboard" element={<Fee_Dashboard />} />
+          <Route path="fee-records" element={<Fee />} />
+          <Route path="payment-history" element={<FeePayment />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
 
         {/* Fallback */}
