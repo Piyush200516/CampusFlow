@@ -24,6 +24,14 @@ import Administrative_Features from "./pages/Student/Administrative_Features";
 import CDC_Layout from "./pages/CDC/CDC_Latout";
 import CDC_Dashboard from "./pages/CDC/CDC_Dashboard";
 
+// Department Components
+import Department_Layout from "./pages/Department/Department_Layout";
+import Department_Dashboard from "./pages/Department/Department_Dashboard";
+
+// Fee Department Components
+import Fee_Layout from "./pages/Fee/Fee_Layout";
+import Fee_Dashboard from "./pages/Fee/Fee_Dashboard";
+
 import { Outlet } from "react-router-dom";
 import { useDarkMode } from "./context/DarkModeContext";
 
@@ -80,6 +88,19 @@ function App() {
         {/* CDC (Placement Cell) Routes */}
         <Route path="/cdc" element={<CDC_Layout />}>
           <Route path="dashboard" element={<CDC_Dashboard />} />
+        </Route>
+
+{/* Department Routes */}
+        <Route path="/department" element={<Department_Layout />}>
+          <Route path="dashboard" element={<Department_Dashboard />} />
+          <Route path="attendance" element={<Attendance />} />
+          <Route path="Administrative_Features" element={<Administrative_Features />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
+
+        {/* Fee Department Routes */}
+        <Route path="/fee" element={<Fee_Layout />}>
+          <Route path="dashboard" element={<Fee_Dashboard />} />
         </Route>
 
         {/* Fallback */}
