@@ -16,11 +16,9 @@ import FeePayment from "./pages/Student/FeePayment";
 import Information from "./pages/Student/Information";
 import TC from "./pages/Student/TC";
 import Settings from "./pages/Student/Settings";
-
-
+import Dashboard_Analytics from "./pages/Student/Dashboard_Analytics";
 
 import { Outlet } from "react-router-dom";
-
 
 // ✅ Layout Component (Common Navbar)
 function Layout() {
@@ -62,6 +60,7 @@ function App() {
           <Route path="Plackment" element={<Plackment />} />
           <Route path="TC" element={<TC />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="Dashboard_Analytics" element={<Dashboard_Analytics/>} />
          </Route>
 
         {/* Fallback */}

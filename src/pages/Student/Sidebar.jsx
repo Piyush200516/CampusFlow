@@ -22,7 +22,6 @@ export default function Sidebar() {
     { name: "Attendance", path: "/attendance", icon: <Clock size={18} /> },
     { name: "Placement Drives", path: "/Plackment", icon: <Rocket size={18} /> },
     { name: "TC", path: "/TC", icon: <Users size={18} /> },
-    { name: "Career & Growth Section", path: "/Creer_Growth", icon: <Rocket size={18} /> },
     { name: "Administrative Features", path: "/Administrative_Features", icon: <Rocket size={18} /> },
      { name: "Dashboard Analytics", path: "/Dashboard_Analytics", icon: <Rocket size={18} /> },
    { name: "Settings", path: "/settings", icon: <Settings size={18} /> },
