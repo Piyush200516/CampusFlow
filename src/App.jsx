@@ -20,6 +20,10 @@ import Settings from "./pages/Student/Settings";
 import Dashboard_Analytics from "./pages/Student/Dashboard_Analytics";
 import Administrative_Features from "./pages/Student/Administrative_Features";
 
+// CDC Components
+import CDC_Layout from "./pages/CDC/CDC_Latout";
+import CDC_Dashboard from "./pages/CDC/CDC_Dashboard";
+
 import { Outlet } from "react-router-dom";
 import { useDarkMode } from "./context/DarkModeContext";
 
@@ -64,14 +68,19 @@ function App() {
           <Route path="Information" element={<Information />} />
           <Route path="internships" element={<Internships />} />
           <Route path="attendance" element={<Attendance />} />
-<Route path="fee" element={<Fee />} />
+          <Route path="fee" element={<Fee />} />
           <Route path="pay-fee" element={<FeePayment />} />
           <Route path="Plackment" element={<Plackment />} />
           <Route path="TC" element={<TC />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="Dashboard_Analytics" element={<Dashboard_Analytics/>} />
-<Route path="Administrative_Features" element={<Administrative_Features/>}/>
-         </Route>
+          <Route path="Administrative_Features" element={<Administrative_Features/>}/>
+        </Route>
+
+        {/* CDC (Placement Cell) Routes */}
+        <Route path="/cdc" element={<CDC_Layout />}>
+          <Route path="dashboard" element={<CDC_Dashboard />} />
+        </Route>
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/login" />} />
