@@ -28,7 +28,7 @@ export default function Sidebar({ isCollapsed, onToggle }) {
 
   const menuItems = [
     { name: "Dashboard", path: "/fee/dashboard", icon: <LayoutDashboard size={18} /> },
-    { name: "Fee Records", path: "/fee/fee-records", icon: <Award size={18} /> },
+    { name: "Fee Records", path: "/fee/Fee_Records", icon: <Award size={18} /> },
     { name: "Payment History", path: "/fee/payment-history", icon: <FileText size={18} /> },
     { name: "Settings", path: "/fee/settings", icon: <Settings size={18} /> },
   ]

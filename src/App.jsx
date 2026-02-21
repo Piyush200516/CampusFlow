@@ -31,6 +31,7 @@ import Department_Dashboard from "./pages/Department/Department_Dashboard";
 // Fee Department Components
 import Fee_Layout from "./pages/Fee/Fee_Layout";
 import Fee_Dashboard from "./pages/Fee/Fee_Dashboard";
+import Fee_Records from "./pages/Fee/Fee_Records";
 
 import { Outlet } from "react-router-dom";
 import { useDarkMode } from "./context/DarkModeContext";
@@ -98,10 +99,10 @@ function App() {
           <Route path="settings" element={<Settings />} />
         </Route>
 
-        {/* Fee Department Routes */}
+{/* Fee Department Routes */}
         <Route path="/fee" element={<Fee_Layout />}>
           <Route path="dashboard" element={<Fee_Dashboard />} />
-          <Route path="fee-records" element={<Fee />} />
+          <Route path="Fee_Records" element={<Fee_Records />} />
           <Route path="payment-history" element={<FeePayment />} />
           <Route path="settings" element={<Settings />} />
         </Route>
