@@ -4,11 +4,13 @@ import { Outlet } from "react-router-dom";
 
 export default function Layout() {
   return (
-    <div style={{ display: "flex" }}>
+    <div style={{ display: "flex", minHeight: "100vh" }}>
       
-      <Sidebar />
+      <div style={{ position: "fixed", height: "100vh" }}>
+        <Sidebar />
+      </div>
 
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, marginLeft: "16rem" }}>
         <Topbar />
 
         <div style={{ padding: "20px" }}>
