@@ -27,8 +27,10 @@ export default function Sidebar({ isCollapsed, onToggle }) {
   };
 
   const menuItems = [
-    { name: "Dashboard", path: "/cdc/dashboard", icon: <LayoutDashboard size={18} /> },
-   
+    { name: "Dashboard", path: "/department/dashboard", icon: <LayoutDashboard size={18} /> },
+    { name: "Attendance", path: "/department/attendance", icon: <Clock size={18} /> },
+    { name: "Administrative Features", path: "/department/Administrative_Features", icon: <Rocket size={18} /> },
+   { name: "Settings", path: "/department/settings", icon: <Settings size={18} /> },
 
   ]
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Sidebar from "./CDC_Sidebar";
-import Topbar from "./CDC_Topbar";
+import Sidebar from "./Depatment_Sidebar";
+import Topbar from "./Department_Topbar";
 import { Outlet } from "react-router-dom";
 import { useDarkMode } from "../../context/DarkModeContext";
 

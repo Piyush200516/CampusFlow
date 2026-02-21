@@ -129,15 +129,17 @@ const Login = () => {
           </button>
         </form>
 
-        <p className="text-center text-sm mt-6 text-gray-600">
-          Don't have an account?{" "}
-          <Link
-            to="/signup"
-            className="text-blue-600 cursor-pointer hover:underline"
-          >
-            Sign Up
-          </Link>
-        </p>
+        {userRole === "student" && (
+          <p className="text-center text-sm mt-6 text-gray-600">
+            Don't have an account?{" "}
+            <Link
+              to="/signup"
+              className="text-blue-600 cursor-pointer hover:underline"
+            >
+              Sign Up
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );
