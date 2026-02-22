@@ -5,6 +5,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [scholarNo, setScholarNo] = useState("");
   const [role, setRole] = useState("student"); // "student", "fee", "cdc", or "department"
   const navigate = useNavigate();
 
@@ -40,9 +41,10 @@ const Login = () => {
       return;
     }
 
-    // ✅ Save email and role for dashboard
+// ✅ Save email, role and scholarNo for dashboard
     localStorage.setItem("studentEmail", email);
     localStorage.setItem("userRole", role);
+    localStorage.setItem("scholarNo", scholarNo);
 
     // Redirect based on role
     if (role === "fee") {
