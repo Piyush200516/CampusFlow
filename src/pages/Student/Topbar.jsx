@@ -1,38 +1,63 @@
 import { useEffect, useState } from "react";
-import { Moon } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
+import { useDarkMode } from "../../context/DarkModeContext";
 
 export default function Navbar() {
   const [email, setEmail] = useState("");
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser) {
-      setEmail(storedUser.email);
+    const storedEmail = localStorage.getItem("studentEmail");
+    if (storedEmail) {
+      setEmail(storedEmail);
     }
   }, []);
 
   return (
-    <div className="w-full bg-gray-100 flex justify-between items-center px-6 py-3 shadow-sm">
+    <div className={`w-full flex justify-between items-center px-6 py-3 shadow-sm transition-colors duration-300 ${
+      isDarkMode ? "bg-gray-800" : "bg-gray-100"
+    }`}>
 
       {/* Left Logo */}
       <div className="flex items-center gap-3">
         <img
-          src="/logo.png"   // apna logo path yaha daalo
+          src="/Acropolis-logo.png"
           alt="Logo"
           className="h-10"
         />
         <div>
-          <h1 className="text-xl font-bold text-blue-900">ACROPOLIS</h1>
-          <p className="text-sm text-gray-500">Enlightening Wisdom</p>
+          <h1 className={`text-xl font-bold transition-colors duration-300 ${
+            isDarkMode ? "text-white" : "text-blue-900"
+          }`}></h1>
+          <p className={`text-sm transition-colors duration-300 ${
+            isDarkMode ? "text-gray-400" : "text-gray-500"
+          }`}></p>
         </div>
       </div>
 
-      {/* Right Email */}
-      <div className="flex items-center gap-3 bg-gray-200 px-4 py-2 rounded-xl">
-        <Moon size={18} />
-        <span className="text-sm font-medium">
-          {email || "No User Logged In"}
-        </span>
+      {/* Right Email & Dark Mode Toggle */}
+      <div className="flex items-center gap-3">
+        {/* Dark Mode Toggle Button */}
+        <button
+          onClick={toggleDarkMode}
+          className={`p-2 rounded-xl transition-colors duration-300 ${
+            isDarkMode ? "bg-gray-700 hover:bg-gray-600" : "bg-gray-200 hover:bg-gray-300"
+          }`}
+          aria-label="Toggle dark mode"
+        >
+          {isDarkMode ? <Sun size={18} className="text-yellow-400" /> : <Moon size={18} className="text-gray-700" />}
+        </button>
+        
+        {/* User Email */}
+        <div className={`flex items-center gap-3 px-4 py-2 rounded-xl transition-colors duration-300 ${
+          isDarkMode ? "bg-gray-700" : "bg-gray-200"
+        }`}>
+          <span className={`text-sm font-medium transition-colors duration-300 ${
+            isDarkMode ? "text-gray-200" : "text-gray-700"
+          }`}>
+            {email || "No User Logged In"}
+          </span>
+        </div>
       </div>
     </div>
   );

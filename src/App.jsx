@@ -20,17 +20,20 @@ import Dashboard_Analytics from "./pages/Student/Dashboard_Analytics";
 import Administrative_Features from "./pages/Student/Administrative_Features";
 
 import { Outlet } from "react-router-dom";
+import { useDarkMode } from "./context/DarkModeContext";
 
 // ✅ Layout Component (Common Navbar)
 function Layout() {
+  const { isDarkMode } = useDarkMode();
+
   return (
     <div style={{ display: "flex" }}>
       <Sidebar />
 
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1 }} className={`transition-colors duration-300 ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}>
         <Topbar />
 
-        <div style={{ padding: "20px" }}>
+        <div style={{ padding: "20px" }} className={`transition-colors duration-300 ${isDarkMode ? "bg-gray-900 min-h-screen" : "bg-gray-50 min-h-screen"}`}>
           <Outlet />
         </div>
       </div>
