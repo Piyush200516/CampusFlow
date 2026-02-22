@@ -1,218 +1,162 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-export default function CampusApplicationForm() {
-  const [form, setForm] = useState({});
-  const [submitted, setSubmitted] = useState(false);
+export default function CombinedStudentForm() {
 
-  // ✅ Load Data from LocalStorage on Page Load
-  useEffect(() => {
-    const savedForm = localStorage.getItem("cafData");
-    const savedStatus = localStorage.getItem("cafSubmitted");
+  const [skills, setSkills] = useState([]);
 
-    if (savedForm) {
-      setForm(JSON.parse(savedForm));
-    }
-
-    if (savedStatus === "true") {
-      setSubmitted(true);
-    }
-  }, []);
-
-  // ✅ Handle Input Change
-  const handleChange = (e) => {
-    const { name, value, type, checked, files } = e.target;
-
-    const updatedValue =
-      type === "checkbox"
-        ? checked
-        : type === "file"
-        ? URL.createObjectURL(files[0])
-        : value;
-
-    const updatedForm = {
-      ...form,
-      [name]: updatedValue,
-    };
-
-    setForm(updatedForm);
-    localStorage.setItem("cafData", JSON.stringify(updatedForm));
+  const toggleSkill = (skill) => {
+    if (skills.includes(skill))
+      setSkills(skills.filter(s => s !== skill));
+    else
+      setSkills([...skills, skill]);
   };
 
-  // ✅ Handle Submit
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    localStorage.setItem("cafSubmitted", "true");
-    setSubmitted(true);
-  };
-
-  // ✅ After Submit Show Preview
-  if (submitted) {
-    return (
-      <ApplicationPreview
-        form={form}
-        onEdit={() => {
-          setSubmitted(false);
-          localStorage.setItem("cafSubmitted", "false");
-        }}
-      />
-    );
-  }
+  const skillList = [
+    "HTML","CSS","JavaScript","React","Node.js","Python","Java","SQL"
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 flex justify-center">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-6xl bg-white p-8 rounded-2xl shadow space-y-10"
-      >
-        <h1 className="text-3xl font-bold text-center">
-          Student Information Application Form (SIAF)
-        </h1>
+    <div className="bg-gray-100 min-h-screen p-6">
 
-        <SectionTitle title="Personal Details" />
-        <Grid3>
-          <Input label="Full Name" name="fullName" onChange={handleChange} />
-          <Input label="Mobile" name="mobile" onChange={handleChange} />
-          <Input label="Email" name="email" onChange={handleChange} />
-          <Input label="Date of Birth" type="date" name="dob" onChange={handleChange} />
-          <Input label="Passport Photo" type="file" name="photo" onChange={handleChange} />
-        </Grid3>
+      <h1 className="text-3xl font-bold text-center mb-6">
+        Student Information Form
+      </h1>
 
-        <SectionTitle title="Academic Record" />
-        <Grid3>
-          <Input label="10th Board" name="board10" onChange={handleChange} />
-          <Input label="10th Percentage" name="percent10" onChange={handleChange} />
-          <Input label="Current CGPA" name="cgpa" onChange={handleChange} />
-        </Grid3>
+      <div className="max-w-7xl mx-auto space-y-6">
 
-        <SectionTitle title="Professional Profile" />
-        <Grid3>
-          <Input label="Primary Domain" name="primaryDomain" onChange={handleChange} />
-          <Input label="Skills" name="skills" onChange={handleChange} />
-        </Grid3>
+        {/* ================= PROFILE INFO ================= */}
+        <div className="card">
+          <h2 className="title">Student Profile Information</h2>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-3 rounded-xl text-lg hover:bg-blue-700"
-        >
-          Submit Application
-        </button>
-      </form>
-    </div>
-  );
-}
-
-/* ================= PREVIEW PAGE ================= */
-
-function ApplicationPreview({ form, onEdit }) {
-
-  const handlePrint = () => {
-    window.print();
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-100 p-6 flex justify-center print:bg-white">
-      <div className="w-full max-w-5xl bg-white p-8 rounded-2xl shadow space-y-8 print:shadow-none">
-
-        <div className="flex justify-between items-center print:hidden">
-          <h1 className="text-2xl font-bold">
-            Student Information Application Form (SIAF)
-          </h1>
-
-          <div className="space-x-3">
-            <button
-              onClick={handlePrint}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-            >
-              Print
-            </button>
-
-            <button
-              onClick={onEdit}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-            >
-              Edit
-            </button>
+          <div className="grid md:grid-cols-2 gap-4">
+            <input className="input" placeholder="Full Name"/>
+            <input className="input" placeholder="College Email"/>
+            <input className="input" placeholder="RGPV Enrollment"/>
+            <input className="input" placeholder="Institute Enrollment"/>
+            <input className="input" placeholder="Course"/>
+            <input className="input" placeholder="Branch"/>
+            <input className="input" placeholder="Batch Year"/>
+            <input className="input" placeholder="Section"/>
           </div>
         </div>
 
-        <SectionPreview title="Personal Details">
-          <Preview label="Full Name" value={form.fullName} />
-          <Preview label="Mobile" value={form.mobile} />
-          <Preview label="Email" value={form.email} />
-          <Preview label="DOB" value={form.dob} />
 
-          {form.photo && (
-            <div className="md:col-span-2">
-              <img
-                src={form.photo}
-                alt="Passport"
-                className="w-32 h-32 rounded border"
-              />
+        {/* ================= MAIN GRID ================= */}
+        <div className="grid lg:grid-cols-2 gap-6">
+
+          {/* LEFT */}
+          <div className="space-y-6">
+
+            {/* PERSONAL */}
+            <div className="card">
+              <h2 className="title">Personal Details</h2>
+
+              <div className="flex gap-4">
+                <div className="border-2 border-dashed rounded-lg w-32 h-32 flex items-center justify-center text-sm">
+                  Upload Photo
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 flex-1">
+                  <input className="input" placeholder="Full Name"/>
+                  <input className="input" placeholder="Email"/>
+                  <input className="input" placeholder="Mobile"/>
+                  <input className="input" placeholder="WhatsApp"/>
+
+                  <select className="input">
+                    <option>Gender</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                  </select>
+
+                  <input type="date" className="input"/>
+                  <input className="input" placeholder="Category"/>
+                </div>
+              </div>
             </div>
-          )}
-        </SectionPreview>
 
-        <SectionPreview title="Academic Record">
-          <Preview label="10th Board" value={form.board10} />
-          <Preview label="10th %" value={form.percent10} />
-          <Preview label="CGPA" value={form.cgpa} />
-        </SectionPreview>
+            {/* ADDRESS */}
+            <div className="card">
+              <h2 className="title">Address Details</h2>
 
-        <SectionPreview title="Professional Profile">
-          <Preview label="Primary Domain" value={form.primaryDomain} />
-          <Preview label="Skills" value={form.skills} />
-        </SectionPreview>
+              <textarea className="input" placeholder="Address"/>
+              <div className="grid grid-cols-3 gap-3 mt-3">
+                <input className="input" placeholder="City"/>
+                <input className="input" placeholder="State"/>
+                <input className="input" placeholder="Pincode"/>
+              </div>
+            </div>
+
+            {/* PROJECT */}
+            <div className="card">
+              <h2 className="title">Projects & Experience</h2>
+              <input className="input mb-3" placeholder="Project Links"/>
+              <textarea className="input" placeholder="Description"/>
+            </div>
+
+          </div>
+
+          {/* RIGHT */}
+          <div className="space-y-6">
+
+            {/* ACADEMIC */}
+            <div className="card">
+              <h2 className="title">Academic Details</h2>
+
+              <div className="grid grid-cols-3 gap-3">
+                <input className="input" placeholder="Board"/>
+                <input className="input" placeholder="Year"/>
+                <input className="input" placeholder="% / CGPA"/>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3 mt-3">
+                <input className="input" placeholder="Course"/>
+                <input className="input" placeholder="Branch"/>
+                <input className="input" placeholder="College"/>
+                <input className="input" placeholder="Passing Year"/>
+                <input className="input" placeholder="CGPA"/>
+              </div>
+            </div>
+
+            {/* CAREER */}
+            <div className="card">
+              <h2 className="title">Career Preferences</h2>
+
+              <input className="input mb-3" placeholder="Career Preference"/>
+              <input className="input mb-4" placeholder="Primary Domain"/>
+
+              <div className="flex flex-wrap gap-2">
+                {skillList.map(skill => (
+                  <button
+                    type="button"
+                    key={skill}
+                    onClick={()=>toggleSkill(skill)}
+                    className={`skill ${
+                      skills.includes(skill)
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200"
+                    }`}
+                  >
+                    {skill}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* RESUME */}
+            <div className="card">
+              <h2 className="title">Resume Upload</h2>
+              <input type="file" className="input"/>
+            </div>
+
+            <button className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700">
+              Submit Form
+            </button>
+
+          </div>
+
+        </div>
 
       </div>
-    </div>
-  );
-}
-
-/* ================= REUSABLE COMPONENTS ================= */
-
-function SectionTitle({ title }) {
-  return (
-    <h2 className="text-xl font-semibold border-b pb-2">{title}</h2>
-  );
-}
-
-function Grid3({ children }) {
-  return (
-    <div className="grid md:grid-cols-3 gap-6">{children}</div>
-  );
-}
-
-function Input({ label, name, type = "text", onChange }) {
-  return (
-    <div>
-      <label className="block text-sm mb-1">{label}</label>
-      <input
-        type={type}
-        name={name}
-        onChange={onChange}
-        required
-        className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-400"
-      />
-    </div>
-  );
-}
-
-function SectionPreview({ title, children }) {
-  return (
-    <div className="border rounded-xl p-6 space-y-4">
-      <h2 className="text-lg font-semibold border-b pb-2">{title}</h2>
-      <div className="grid md:grid-cols-2 gap-4">
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function Preview({ label, value }) {
-  return (
-    <div>
-      <p className="text-gray-500 text-sm">{label}</p>
-      <p className="font-medium">{value || "-"}</p>
     </div>
   );
 }

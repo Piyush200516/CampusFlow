@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import API from "../../services/api";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -7,15 +8,18 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [scholarNo, setScholarNo] = useState("");
   const [role, setRole] = useState("student"); // "student", "fee", "cdc", or "department"
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     // ✅ Email Validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.(com|in|org)$/;
     if (!emailPattern.test(email)) {
       alert("Invalid email format! Must contain @ and .com/.in/.org");
+      setLoading(false);
       return;
     }
 
@@ -26,35 +30,65 @@ const Login = () => {
 
     if (password.length < 6) {
       alert("Password must be at least 6 characters long");
+      setLoading(false);
       return;
     }
     if (numberCount < 3) {
       alert("Password must contain at least 3 numbers");
+      setLoading(false);
       return;
     }
     if (!hasCapital) {
       alert("Password must contain at least 1 capital letter");
+      setLoading(false);
       return;
     }
     if (!hasSpecial) {
       alert("Password must contain at least 1 special character");
+      setLoading(false);
       return;
     }
 
-// ✅ Save email, role and scholarNo for dashboard
-    localStorage.setItem("studentEmail", email);
-    localStorage.setItem("userRole", role);
-    localStorage.setItem("scholarNo", scholarNo);
+    try {
+      // ✅ Call Login API to validate with database
+      const response = await API.post("/login", {
+        email,
+        password,
+        role
+      });
 
-    // Redirect based on role
-    if (role === "fee") {
-      navigate("/fee/dashboard");
-    } else if (role === "cdc") {
-      navigate("/cdc/dashboard");
-    } else if (role === "department") {
-      navigate("/department/dashboard");
-    } else {
-      navigate("/dashboard");
+      if (response.data.message === "Login Successful ✅") {
+        const user = response.data.user;
+        
+        // ✅ Save user data from database to localStorage
+        localStorage.setItem("studentEmail", email);
+        localStorage.setItem("userRole", role);
+        localStorage.setItem("scholarNo", scholarNo);
+        localStorage.setItem("userData", JSON.stringify(user));
+
+        // Redirect based on role
+        if (role === "fee") {
+          navigate("/fee/dashboard");
+        } else if (role === "cdc") {
+          navigate("/cdc/dashboard");
+        } else if (role === "department") {
+          navigate("/department/dashboard");
+        } else {
+          navigate("/dashboard");
+        }
+      } else {
+        alert(response.data.message);
+      }
+    } catch (error) {
+      if (error.response) {
+        alert(error.response.data.message || "Login failed");
+      } else if (error.request) {
+        alert("Server not responding. Please try again later.");
+      } else {
+        alert("An error occurred. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
