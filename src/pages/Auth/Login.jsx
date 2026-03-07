@@ -51,13 +51,13 @@ const Login = () => {
 
     try {
       // ✅ Call Login API to validate with database
-      const response = await API.post("/login", {
+      const response = await API.post("/api/login", {
         email,
         password,
         role
       });
 
-      if (response.data.message === "Login Successful ✅") {
+      if (response.data.message === "Login Successful") {
         const user = response.data.user;
         
         // ✅ Save user data from database to localStorage

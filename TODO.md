@@ -1,10 +1,14 @@
-# Dark Mode Implementation Plan
+# TC PDF Download Fix - TODO
 
-## Tasks:
-- [x] 1. Create src/context/DarkModeContext.jsx - Dark mode context provider
-- [x] 2. Update src/main.jsx - Wrap App with DarkModeProvider
-- [x] 3. Update src/pages/Student/Topbar.jsx - Add dark mode toggle and classes
-- [x] 4. Update src/pages/Student/Sidebar.jsx - Add dark mode classes
-- [x] 5. Update src/App.jsx Layout component - Add dark mode background classes
+## Task
+Fix TC PDF download issue - currently downloads entire webpage instead of just the PDF file.
 
-## Progress: All tasks completed!
+## Steps:
+- [x] 1. Install pdfkit package in backend
+- [x] 2. Update feeRoutes.js to add TC PDF generation endpoint
+- [x] 3. Update TC.jsx frontend to fetch and download PDF properly
+
+## Implementation:
+- Backend: Create `/api/generate-tc-pdf` route using pdfkit
+- Frontend: Fetch PDF from API and trigger file download
+

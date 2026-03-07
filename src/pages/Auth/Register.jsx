@@ -33,8 +33,8 @@ const Signup = () => {
     }
 
     try {
-      const response = await API.post("/register", formData);
-      if (response.data.message === "Student Registered Successfully ✅") {
+      const response = await API.post("/api/register", formData);
+      if (response.data.message === "Student Registered Successfully") {
         alert("Registration Successful! Please login.");
         navigate("/");
       } else {

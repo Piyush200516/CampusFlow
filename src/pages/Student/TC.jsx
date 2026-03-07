@@ -42,8 +42,50 @@ export default function TCApplication() {
     localStorage.setItem("tcStatus", "Rejected");
   };
 
-  const handleDownload = () => {
-    window.print();
+  const handleDownload = async () => {
+    try {
+      // Build query parameters from form data
+      const params = new URLSearchParams({
+        fullName: form.fullName || "",
+        enrollment: form.enrollment || "",
+        course: form.course || "",
+        year: form.year || "",
+        reason: form.reason || "",
+      });
+
+      // Fetch PDF from backend
+      const response = await fetch(
+        `http://localhost:5000/api/generate-tc-pdf?${params}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/pdf",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to generate TC PDF");
+      }
+
+      // Convert response to blob
+      const blob = await response.blob();
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `TC_${form.enrollment || "Certificate"}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading TC:", error);
+      alert("Failed to download TC. Please try again.");
+    }
   };
 
   /* ========================= */
