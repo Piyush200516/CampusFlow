@@ -19,25 +19,104 @@ A full-stack Campus Management System designed to manage academic and administra
 
 ```
 CampusFlow/
-├── src/                      # React Frontend
-│   ├── components/           # Reusable UI components
-│   ├── context/              # React Context (Dark Mode)
-│   ├── layouts/             # Layout components
-│   ├── pages/                # Page components
-│   │   ├── Auth/            # Login, Register, Forgot Password
-│   │   ├── Student/         # Student module pages
-│   │   ├── CDC/              # Career Development Cell module
-│   │   ├── Department/       # Department module
-│   │   └── Fee/              # Fee/College Student Section module
-│   ├── routes/               # Route definitions
-│   └── services/             # API services
-├── public/                   # Static assets
-├── campus_portal_backend/    # Express.js Backend
-│   ├── server.js             # Main server file
-│   └── package.json          # Backend dependencies
-├── database.sql              # Database schema
-├── package.json              # Frontend dependencies
-└── vite.config.js            # Vite configuration
+├── src/                           # React Frontend
+│   ├── assets/                    # Static assets (images, logos)
+│   ├── components/                # Reusable UI components
+│   │   ├── Card.jsx               # Card component
+│   │   ├── Loader.jsx             # Loading spinner
+│   │   ├── Navbar.jsx             # Navigation bar
+│   │   ├── ProtectedRoute.jsx     # Route protection
+│   │   ├── Sidebar.jsx            # Sidebar navigation
+│   │   └── Table.jsx             # Table component
+│   ├── context/                   # React Context
+│   │   └── DarkModeContext.jsx   # Dark mode state management
+│   ├── layouts/                   # Layout components
+│   │   ├── CDCLayout.jsx         # CDC module layout
+│   │   ├── DepartmentLayout.jsx  # Department module layout
+│   │   ├── FeeLayout.jsx         # Fee module layout
+│   │   └── StudentsLayout.jsx    # Student module layout
+│   ├── pages/                     # Page components
+│   │   ├── Auth/                  # Authentication pages
+│   │   │   ├── ForgotPassword.jsx
+│   │   │   ├── Login.jsx
+│   │   │   └── Register.jsx
+│   │   ├── CDC/                   # Career Development Cell module
+│   │   │   ├── AddCompany.jsx
+│   │   │   ├── Applications.jsx
+│   │   │   ├── CDC_Layout.jsx
+│   │   │   ├── CDC_Settings.jsx
+│   │   │   ├── CDC_Sidebar.jsx
+│   │   │   ├── CDC_Topbar.jsx
+│   │   │   ├── CompanyList.jsx
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── StudentForms.jsx
+│   │   │   └── UpdateStatus.jsx
+│   │   ├── Department/            # Department module
+│   │   │   ├── AttendanceUpdate.jsx
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── Department_Layout.jsx
+│   │   │   ├── Department_Settings.jsx
+│   │   │   ├── Department_Sidebar.jsx
+│   │   │   ├── Department_Topbar.jsx
+│   │   │   ├── StudentList.jsx
+│   │   │   └── VerifyForms.jsx
+│   │   ├── Fee/                   # Fee/College Student Section module
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── Fee_Layout.jsx
+│   │   │   ├── Fee_Records.jsx
+│   │   │   ├── Fee_Settings.jsx
+│   │   │   ├── Fee_Sidebar.jsx
+│   │   │   ├── Fee_Topbar.jsx
+│   │   │   ├── FeeUpdate.jsx
+│   │   │   ├── StudentFees.jsx
+│   │   │   └── TCApproval.jsx
+│   │   └── Student/               # Student module
+│   │       ├── Administrative_Features.jsx
+│   │       ├── Attendance.jsx
+│   │       ├── Dashboard_Analytics.jsx
+│   │       ├── Dashboard.jsx
+│   │       ├── Fee.jsx
+│   │       ├── FeePayment.jsx
+│   │       ├── Information.jsx
+│   │       ├── Internships.jsx
+│   │       ├── Layout.jsx
+│   │       ├── Plackment.jsx
+│   │       ├── Settings.jsx
+│   │       ├── Sidebar.jsx
+│   │       ├── TC.jsx
+│   │       └── Topbar.jsx
+│   ├── routes/                     # Route definitions
+│   │   └── AppRoutes.jsx          # Main application routes
+│   ├── services/                   # API services
+│   │   └── api.js                 # Axios API configuration
+│   ├── App.jsx                     # Main App component
+│   ├── index.css                   # Global styles
+│   └── main.jsx                    # Application entry point
+├── public/                          # Static assets
+│   ├── Acropolis-logo.png
+│   ├── aitr-logo.jpg
+│   └── vite.svg
+├── campus_portal_backend/           # Express.js Backend
+│   ├── server.js                   # Main server file (API endpoints)
+│   ├── package.json                # Backend dependencies
+│   ├── generate_hash.js            # Utility script for password hashing
+│   ├── db.js                       # Database connection
+│   ├── routes/                     # API Route handlers
+│   │   ├── authRoutes.js           # Authentication routes
+│   │   ├── companyRoutes.js        # Company/CDC routes
+│   │   ├── feeRoutes.js            # Fee management routes
+│   │   └── ...                     # Other route files
+│   └── node_modules/               # Backend dependencies
+├── database.sql                    # Database schema
+├── package.json                    # Frontend dependencies
+├── vite.config.js                  # Vite configuration
+├── tailwind.config.js              # Tailwind CSS configuration
+├── eslint.config.js                # ESLint configuration
+├── index.html                      # HTML entry point
+├── generate_hash.js                 # Utility script
+├── check_columns.js                # Database utility script
+├── structure.txt                   # Project structure file
+└── TODO.md                         # Task tracking
 ```
 
 ---
@@ -202,17 +281,3 @@ npm start
 
 ## 📌 Author
 
-Developed by: **Piyush**  
-B.Tech CSE at AITR (Acropolis Institute of Technology and Research)
-
----
-
-## 🔗 GitHub Repository
-
-[ CampusFlow on GitHub ](https://github.com/Piyush200516/CampusFlow)
-
----
-
-## 📄 License
-
-ISC License
