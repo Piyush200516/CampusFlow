@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -8,7 +9,9 @@ import {
   Rocket,
   Users,
   Settings,
-  LogOut
+  LogOut,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { useDarkMode } from "../../context/DarkModeContext";
 
@@ -16,11 +19,10 @@ export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { isDarkMode } = useDarkMode();
+  const [collapsed, setCollapsed] = useState(false);
 
   const handleLogout = () => {
-    // Clear localStorage
     localStorage.removeItem("studentEmail");
-    // Navigate to login page
     navigate("/login");
   };
 
@@ -38,33 +40,45 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className={`w-64 h-screen flex flex-col justify-between p-4 border-r transition-colors duration-300 ${
-      isDarkMode ? "bg-gray-800 border-gray-700" : "bg-gray-100"
+    <div className={`${collapsed ? "w-20" : "w-64"} h-screen flex flex-col justify-between p-4 border-r transition-all duration-300 ${
+      isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
     }`}>
 
-      {/* Logo */}
+      {/* Logo Section */}
       <div>
-        <h2 className={`text-xl font-bold mb-6 transition-colors duration-300 ${
-          isDarkMode ? "text-white" : "text-gray-800"
-        }`}>Portal</h2>
+        <div className="flex items-center justify-between mb-6">
+          {!collapsed && (
+            <h2 className={`text-xl font-bold transition-colors duration-300 ${
+              isDarkMode ? "text-white" : "text-gray-800"
+            }`}>Portal</h2>
+          )}
+          <button 
+            onClick={() => setCollapsed(!collapsed)}
+            className={`p-1.5 rounded-lg transition-colors ${
+              isDarkMode ? "hover:bg-gray-700 text-gray-400" : "hover:bg-gray-100 text-gray-600"
+            }`}
+          >
+            {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          </button>
+        </div>
 
         <nav className="flex flex-col gap-2">
           {menuItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors duration-300
+              className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-300
+                ${collapsed ? "justify-center" : ""}
                 ${
                   location.pathname === item.path
-                    ? isDarkMode ? "bg-gray-700 text-white font-semibold" : "bg-gray-300 font-semibold"
-                    : isDarkMode ? "hover:bg-gray-700 text-gray-300" : "hover:bg-gray-200"
+                    ? isDarkMode ? "bg-blue-600 text-white" : "bg-blue-500 text-white"
+                    : isDarkMode ? "hover:bg-gray-700 text-gray-300" : "hover:bg-gray-100 text-gray-700"
                 }
               `}
+              title={collapsed ? item.name : ""}
             >
               {item.icon}
-              <span className={isDarkMode ? "text-gray-200" : "text-gray-700"}>
-                {item.name}
-              </span>
+              {!collapsed && <span>{item.name}</span>}
             </Link>
           ))}
         </nav>
@@ -74,14 +88,17 @@ export default function Sidebar() {
       <div>
         <button 
           onClick={handleLogout}
-          className={`w-full flex items-center gap-2 border rounded-lg py-2 px-4 hover:bg-gray-200 transition-colors duration-300 ${
-            isDarkMode ? "bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600" : "bg-white border-gray-300 text-gray-700"
-          }`}
+          className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors duration-300 w-full
+            ${collapsed ? "justify-center" : ""}
+            ${
+              isDarkMode ? "hover:bg-gray-700 text-gray-300" : "hover:bg-gray-100 text-gray-700"
+            }`}
         >
           <LogOut size={18} />
-          Logout
+          {!collapsed && <span>Logout</span>}
         </button>
       </div>
     </div>
   );
 }
+
