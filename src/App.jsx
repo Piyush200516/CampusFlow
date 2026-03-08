@@ -3,6 +3,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Register";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
+import RoleSelection from "./pages/Auth/RoleSelection";
+import StudentLogin from "./pages/Auth/StudentLogin";
+import CDCLogin from "./pages/Auth/CDCLogin";
+import FeeLogin from "./pages/Auth/FeeLogin";
+import DepartmentLogin from "./pages/Auth/DepartmentLogin";
 
 import Sidebar from "./pages/Student/Sidebar";
 import Topbar from "./pages/Student/Topbar";
@@ -138,6 +143,13 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        
+        {/* New Separate Login Pages */}
+        <Route path="/role-selection" element={<RoleSelection />} />
+        <Route path="/student-login" element={<StudentLogin />} />
+        <Route path="/cdc-login" element={<CDCLogin />} />
+        <Route path="/fee-login" element={<FeeLogin />} />
+        <Route path="/department-login" element={<DepartmentLogin />} />
 
         {/* Protected / Student Routes with Common Navbar */}
         <Route path="/" element={<Layout />}>
