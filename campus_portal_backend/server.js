@@ -141,6 +141,30 @@ app.get("/api/student/info/:user_id", (req, res) => {
   });
 });
 
+// ================== DEPARTMENT VIEW ALL STUDENTS (with form status) ===================
+app.get("/api/department/students/:department_id", (req, res) => {
+  // Get ALL students from users table - with or without department assignment
+  const sql = `SELECT 
+                u.id as user_id,
+                u.full_name,
+                u.email as student_email,
+                u.rgpv_enrollment_no as rgpv_enrollment,
+                u.course,
+                u.branch,
+                u.batch_year,
+                si.id as form_id,
+                si.status as form_status,
+                si.created_at as form_submitted_date
+               FROM users u
+               LEFT JOIN student_info si ON u.id = si.user_id
+               WHERE u.role = 'student'
+               ORDER BY u.full_name ASC`;
+  db.query(sql, (err, result) => {
+    if (err) return res.status(400).json({ error: err.sqlMessage });
+    res.json(result);
+  });
+});
+
 // ================== DEPARTMENT VIEW PENDING FORMS ===================
 app.get("/api/department/forms/:department_id", (req, res) => {
   const sql = `SELECT si.*, u.full_name as student_name, u.email as student_email 
