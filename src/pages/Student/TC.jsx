@@ -53,23 +53,32 @@ export default function TCApplication() {
         reason: form.reason || "",
       });
 
-      // Fetch PDF from backend
+      console.log("Fetching TC PDF with params:", params.toString());
+
+      // Fetch PDF from backend using proxy
       const response = await fetch(
-        `http://localhost:5000/api/generate-tc-pdf?${params}`,
+        `/api/generate-tc-pdf?${params}`,
         {
           method: "GET",
-          headers: {
-            "Content-Type": "application/pdf",
-          },
         }
       );
 
+      console.log("Response status:", response.status);
+      console.log("Response ok:", response.ok);
+
       if (!response.ok) {
-        throw new Error("Failed to generate TC PDF");
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        throw new Error(`Failed to generate TC PDF: ${response.status}`);
       }
 
       // Convert response to blob
       const blob = await response.blob();
+      console.log("Blob size:", blob.size);
+
+      if (blob.size === 0) {
+        throw new Error("Empty PDF received");
+      }
 
       // Create download link
       const url = window.URL.createObjectURL(blob);
@@ -84,7 +93,7 @@ export default function TCApplication() {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading TC:", error);
-      alert("Failed to download TC. Please try again.");
+      alert(`Failed to download TC: ${error.message}. Please make sure the backend server is running.`);
     }
   };
 

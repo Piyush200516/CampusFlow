@@ -60,8 +60,17 @@ const Login = () => {
       if (response.data.message === "Login Successful") {
         const user = response.data.user;
         
-        // ✅ Save user data from database to localStorage
-        localStorage.setItem("studentEmail", email);
+        // ✅ Save user data from database to localStorage based on role
+        if (role === "cdc") {
+          localStorage.setItem("cdcEmail", email);
+        } else if (role === "fee") {
+          localStorage.setItem("feeEmail", email);
+        } else if (role === "department") {
+          localStorage.setItem("departmentEmail", email);
+        } else {
+          localStorage.setItem("studentEmail", email);
+        }
+        
         localStorage.setItem("userRole", role);
         localStorage.setItem("scholarNo", scholarNo);
         localStorage.setItem("userData", JSON.stringify(user));

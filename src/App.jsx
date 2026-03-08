@@ -37,6 +37,7 @@ import CDCAddCompany from "./pages/CDC/AddCompany";
 import CDCCompanyList from "./pages/CDC/CompanyList";
 import CDCApplications from "./pages/CDC/Applications";
 import CDCUpdateStatus from "./pages/CDC/UpdateStatus";
+import CDCStudentForms from "./pages/CDC/StudentForms";
 import CDCSettings from "./pages/CDC/CDC_Settings";
 
 // Department Imports
@@ -170,6 +171,7 @@ function App() {
           <Route path="company-list" element={<CDCCompanyList />} />
           <Route path="applications" element={<CDCApplications />} />
           <Route path="update-status" element={<CDCUpdateStatus />} />
+          <Route path="student-forms" element={<CDCStudentForms />} />
           <Route path="settings" element={<CDCSettings />} />
         </Route>
 

@@ -26,9 +26,10 @@ export default function CDCSidebar() {
   const menuItems = [
     { name: "Dashboard", path: "/cdc/dashboard", icon: <LayoutDashboard size={18} /> },
     { name: "Add Company", path: "/cdc/add-company", icon: <Building2 size={18} /> },
-    { name: "Student Intership", path: "/cdc/company-list", icon: <Building2 size={18} /> },
-    { name: "Student From", path: "/cdc/applications", icon: <Users size={18} /> },
+    { name: "Student Internship", path: "/cdc/company-list", icon: <Building2 size={18} /> },
+    { name: "Applications", path: "/cdc/applications", icon: <Users size={18} /> },
     { name: "Update Status", path: "/cdc/update-status", icon: <CheckCircle size={18} /> },
+    { name: "Student Forms", path: "/cdc/student-forms", icon: <FileText size={18} /> },
     { name: "Settings", path: "/cdc/settings", icon: <Settings size={18} /> },
   ];
 

@@ -1,11 +1,11 @@
 {
-  "name": "campusflow-backend",
+  "name": "campus_portal_backend",
   "version": "1.0.0",
   "description": "",
-  "main": "db.js",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
@@ -15,7 +15,7 @@
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "mysql2": "^3.19.0",
-    "pdfkit": "^0.17.2"
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.19.0"
   }
 }
