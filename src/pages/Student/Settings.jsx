@@ -1,119 +1,202 @@
 import { useState } from "react";
-import { Shield, Key, User, Mail, Smartphone } from "lucide-react";
+import { Shield, Key, User, Mail, Smartphone, Bell, Lock, Eye, EyeOff } from "lucide-react";
+import { useDarkMode } from "../../context/DarkModeContext";
 
 export default function Settings() {
+  const { isDarkMode } = useDarkMode();
   const [activeTab, setActiveTab] = useState("profile");
   const [mfaMethod, setMfaMethod] = useState("email");
+  const [showPasswords, setShowPasswords] = useState({});
+
+  const tabs = [
+    { id: "profile", label: "Profile", icon: <User size={18} /> },
+    { id: "mfa", label: "Multi-Factor Auth", icon: <Shield size={18} /> },
+    { id: "password", label: "Change Password", icon: <Key size={18} /> },
+  ];
+
+  const Input = ({ label, value, isDarkMode, readOnly = true }) => (
+    <div>
+      <label className={`block text-sm font-medium mb-2 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>{label}</label>
+      <input
+        type="text"
+        value={value}
+        readOnly={readOnly}
+        className={`w-full p-3 rounded-xl transition-all ${
+          isDarkMode 
+            ? "bg-gray-700/50 text-gray-300 border border-gray-600" 
+            : "bg-gray-100 text-gray-800 border border-gray-200"
+        }`}
+      />
+    </div>
+  );
+
+  const PasswordInput = ({ label }) => {
+    const [show, setShow] = useState(false);
+    return (
+      <div>
+        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>{label}</label>
+        <div className="relative">
+          <input
+            type={show ? "text" : "password"}
+            placeholder={`Enter ${label.toLowerCase()}`}
+            className={`w-full p-3 pr-12 rounded-xl transition-all ${
+              isDarkMode 
+                ? "bg-gray-700 border border-gray-600 text-white placeholder-gray-400" 
+                : "bg-white border border-gray-200 text-gray-800"
+            }`}
+          />
+          <button
+            type="button"
+            onClick={() => setShow(!show)}
+            className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${
+              isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            {show ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div className="p-6">
-      {/* Top Tabs */}
-      <div className="flex gap-4 mb-6">
-        <button
-          onClick={() => setActiveTab("profile")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl ${
-            activeTab === "profile"
-              ? "bg-white shadow font-semibold"
-              : "bg-gray-100"
-          }`}
-        >
-          <Shield size={18} /> Profile
-        </button>
+    <div className={`p-4 md:p-6 transition-colors duration-300 ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}>
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className={`text-2xl md:text-3xl font-bold ${isDarkMode ? "text-white" : "text-gray-800"}`}>
+          Settings
+        </h1>
+        <p className={`mt-1 ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
+          Manage your account settings and preferences
+        </p>
+      </div>
 
-        <button
-          onClick={() => setActiveTab("mfa")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl ${
-            activeTab === "mfa"
-              ? "bg-white shadow font-semibold"
-              : "bg-gray-100"
-          }`}
-        >
-          <User size={18} /> Multi-Factor Auth
-        </button>
-
-        <button
-          onClick={() => setActiveTab("password")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl ${
-            activeTab === "password"
-              ? "bg-white shadow font-semibold"
-              : "bg-gray-100"
-          }`}
-        >
-          <Key size={18} /> Change Password
-        </button>
+      {/* Tabs */}
+      <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium whitespace-nowrap transition-all duration-300 ${
+              activeTab === tab.id
+                ? isDarkMode 
+                  ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25" 
+                  : "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/25"
+                : isDarkMode 
+                  ? "bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700" 
+                  : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+            }`}
+          >
+            {tab.icon}
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* ================= PROFILE TAB ================= */}
       {activeTab === "profile" && (
-        <div className="bg-white p-6 rounded-2xl shadow">
-          <h2 className="text-lg font-semibold mb-1">
-            Student Profile Information
-          </h2>
-          <p className="text-gray-500 text-sm mb-6">
-            Contact your administrator to update this information.
-          </p>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <Input label="Full Name" value="Piyush Mishra" />
-            <Input label="College Email" value="piyushmishra240613@acropolis.in" />
-            <Input label="RGPV Enrollment Number" value="0827RL243D05" />
-            <Input label="Institute Enrollment Number" value="0827RL243D05" />
-            <Input label="Course" value="B_TECH" />
-            <Input label="Branch" value="CSE_RL" />
-            <Input label="Batch Year" value="2027" />
-            <Input label="Section" value="6" />
+        <div className={`p-6 md:p-8 rounded-2xl shadow-xl ${
+          isDarkMode ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-100"
+        }`}>
+          <div className="flex items-center gap-3 mb-6">
+            <div className={`p-2.5 rounded-xl ${isDarkMode ? "bg-blue-900/30" : "bg-blue-100"}`}>
+              <User className="text-blue-500" size={24} />
+            </div>
+            <div>
+              <h2 className={`text-xl font-semibold ${isDarkMode ? "text-white" : "text-gray-800"}`}>
+                Student Profile Information
+              </h2>
+              <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
+                Your account details
+              </p>
+            </div>
           </div>
 
-          <div className="mt-6 bg-gray-100 p-3 rounded-lg text-sm text-gray-600">
-            If you need to update any of this information, please contact your
-            administrator.
+          <div className="grid md:grid-cols-2 gap-5">
+            <Input label="Full Name" value="Piyush Mishra" isDarkMode={isDarkMode} />
+            <Input label="College Email" value="piyushmishra240613@acropolis.in" isDarkMode={isDarkMode} />
+            <Input label="RGPV Enrollment Number" value="0827RL243D05" isDarkMode={isDarkMode} />
+            <Input label="Institute Enrollment Number" value="0827RL243D05" isDarkMode={isDarkMode} />
+            <Input label="Course" value="B_TECH" isDarkMode={isDarkMode} />
+            <Input label="Branch" value="CSE_RL" isDarkMode={isDarkMode} />
+            <Input label="Batch Year" value="2027" isDarkMode={isDarkMode} />
+            <Input label="Section" value="6" isDarkMode={isDarkMode} />
+          </div>
+
+          <div className={`mt-6 p-4 rounded-xl ${
+            isDarkMode ? "bg-gray-700/50 border border-gray-600" : "bg-gray-50 border border-gray-200"
+          }`}>
+            <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
+              <span className="font-medium">Note:</span> If you need to update any of this information, please contact your administrator.
+            </p>
           </div>
         </div>
       )}
 
       {/* ================= MFA TAB ================= */}
       {activeTab === "mfa" && (
-        <div className="bg-white p-6 rounded-2xl shadow">
-          <div className="bg-gray-100 p-4 rounded-xl mb-6">
-            <h3 className="font-semibold">MFA is not enabled</h3>
-            <p className="text-sm text-gray-500">
-              Set up multi-factor authentication to secure your account.
-            </p>
+        <div className={`p-6 md:p-8 rounded-2xl shadow-xl ${
+          isDarkMode ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-100"
+        }`}>
+          <div className={`p-5 rounded-xl mb-6 ${
+            isDarkMode ? "bg-yellow-900/20 border border-yellow-800" : "bg-yellow-50 border border-yellow-200"
+          }`}>
+            <div className="flex items-start gap-3">
+              <Shield className="text-yellow-500 mt-0.5" size={22} />
+              <div>
+                <h3 className={`font-semibold ${isDarkMode ? "text-yellow-400" : "text-yellow-700"}`}>MFA is not enabled</h3>
+                <p className={`text-sm mt-1 ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
+                  Set up multi-factor authentication to secure your account.
+                </p>
+              </div>
+            </div>
           </div>
 
-          <h2 className="font-semibold mb-4">Setup Multi-Factor Authentication</h2>
+          <h2 className={`font-semibold mb-4 ${isDarkMode ? "text-white" : "text-gray-800"}`}>
+            Setup Multi-Factor Authentication
+          </h2>
 
-          <div className="flex gap-4 mb-6">
+          <div className="grid md:grid-cols-2 gap-4 mb-6">
             <div
               onClick={() => setMfaMethod("email")}
-              className={`flex-1 border p-4 rounded-xl cursor-pointer ${
+              className={`p-5 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
                 mfaMethod === "email"
-                  ? "border-black"
-                  : "border-gray-200"
+                  ? isDarkMode 
+                    ? "border-blue-500 bg-gray-700/50" 
+                    : "border-blue-500 bg-blue-50"
+                  : isDarkMode 
+                    ? "border-gray-600 hover:border-gray-500" 
+                    : "border-gray-200 hover:border-gray-300"
               }`}
             >
-              <Mail className="mb-2" />
-              <h4 className="font-semibold">Email OTP</h4>
-              <p className="text-sm text-gray-500">Get codes via email</p>
+              <Mail className={`mb-3 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`} size={24} />
+              <h4 className={`font-semibold ${isDarkMode ? "text-white" : "text-gray-800"}`}>Email OTP</h4>
+              <p className={`text-sm mt-1 ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>Get codes via email</p>
             </div>
 
             <div
               onClick={() => setMfaMethod("app")}
-              className={`flex-1 border p-4 rounded-xl cursor-pointer ${
+              className={`p-5 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
                 mfaMethod === "app"
-                  ? "border-black"
-                  : "border-gray-200"
+                  ? isDarkMode 
+                    ? "border-blue-500 bg-gray-700/50" 
+                    : "border-blue-500 bg-blue-50"
+                  : isDarkMode 
+                    ? "border-gray-600 hover:border-gray-500" 
+                    : "border-gray-200 hover:border-gray-300"
               }`}
             >
-              <Smartphone className="mb-2" />
-              <h4 className="font-semibold">Authenticator App</h4>
-              <p className="text-sm text-gray-500">
-                Use Google/Microsoft Authenticator
-              </p>
+              <Smartphone className={`mb-3 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`} size={24} />
+              <h4 className={`font-semibold ${isDarkMode ? "text-white" : "text-gray-800"}`}>Authenticator App</h4>
+              <p className={`text-sm mt-1 ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>Use Google/Microsoft Authenticator</p>
             </div>
           </div>
 
-          <button className="w-full bg-black text-white py-3 rounded-xl">
+          <button className={`w-full py-3.5 rounded-xl font-semibold transition-all duration-300 ${
+            isDarkMode 
+              ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25" 
+              : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-blue-500/25"
+          }`}>
             Setup {mfaMethod === "email" ? "Email" : "App"} MFA
           </button>
         </div>
@@ -121,11 +204,22 @@ export default function Settings() {
 
       {/* ================= PASSWORD TAB ================= */}
       {activeTab === "password" && (
-        <div className="bg-white p-6 rounded-2xl shadow max-w-2xl">
-          <h2 className="text-lg font-semibold mb-1">Change Password</h2>
-          <p className="text-gray-500 text-sm mb-6">
-            Use a strong password with at least 8 characters.
-          </p>
+        <div className={`p-6 md:p-8 rounded-2xl shadow-xl max-w-2xl ${
+          isDarkMode ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-100"
+        }`}>
+          <div className="flex items-center gap-3 mb-6">
+            <div className={`p-2.5 rounded-xl ${isDarkMode ? "bg-purple-900/30" : "bg-purple-100"}`}>
+              <Lock className="text-purple-500" size={24} />
+            </div>
+            <div>
+              <h2 className={`text-xl font-semibold ${isDarkMode ? "text-white" : "text-gray-800"}`}>
+                Change Password
+              </h2>
+              <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
+                Use a strong password with at least 8 characters
+              </p>
+            </div>
+          </div>
 
           <div className="space-y-4">
             <PasswordInput label="Current Password" />
@@ -133,7 +227,11 @@ export default function Settings() {
             <PasswordInput label="Confirm New Password" />
           </div>
 
-          <button className="mt-6 w-full bg-black text-white py-3 rounded-xl">
+          <button className={`mt-6 w-full py-3.5 rounded-xl font-semibold transition-all duration-300 ${
+            isDarkMode 
+              ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25" 
+              : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-blue-500/25"
+          }`}>
             Change Password
           </button>
         </div>
@@ -142,30 +240,3 @@ export default function Settings() {
   );
 }
 
-/* ===== Reusable Input Component ===== */
-function Input({ label, value }) {
-  return (
-    <div>
-      <label className="block text-sm mb-1 font-medium">{label}</label>
-      <input
-        type="text"
-        value={value}
-        readOnly
-        className="w-full bg-gray-100 p-3 rounded-lg"
-      />
-    </div>
-  );
-}
-
-function PasswordInput({ label }) {
-  return (
-    <div>
-      <label className="block text-sm mb-1 font-medium">{label}</label>
-      <input
-        type="password"
-        placeholder={`Enter ${label.toLowerCase()}`}
-        className="w-full bg-gray-100 p-3 rounded-lg"
-      />
-    </div>
-  );
-}

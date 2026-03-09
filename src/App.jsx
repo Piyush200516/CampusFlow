@@ -9,9 +9,7 @@ import CDCLogin from "./pages/Auth/CDCLogin";
 import FeeLogin from "./pages/Auth/FeeLogin";
 import DepartmentLogin from "./pages/Auth/DepartmentLogin";
 
-import Sidebar from "./pages/Student/Sidebar";
-import Topbar from "./pages/Student/Topbar";
-
+import StudentLayout from "./pages/Student/Layout";
 import StudentDashboard from "./pages/Student/Dashboard";
 import Internships from "./pages/Student/Internships";
 import Attendance from "./pages/Student/Attendance";
@@ -152,7 +150,7 @@ function App() {
         <Route path="/department-login" element={<DepartmentLogin />} />
 
         {/* Protected / Student Routes with Common Navbar */}
-        <Route path="/" element={<Layout />}>
+        <Route path="/" element={<StudentLayout />}>
           <Route path="dashboard" element={<StudentDashboard />} />
           <Route path="Information" element={<Information />} />
           <Route path="internships" element={<Internships />} />
