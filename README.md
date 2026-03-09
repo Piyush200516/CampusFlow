@@ -15,6 +15,16 @@ A full-stack Campus Management System designed to manage academic and administra
 
 ---
 
+## User Id & Password
+
+
+## CDC ID = cdc@acropolis.in
+## password = cdc@acropolis.in
+
+## Fee_Depatment = fee@college.in
+## password = Fee123@
+
+---
 ## 🏗️ Project Architecture
 
 ```
