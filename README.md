@@ -220,7 +220,8 @@ CampusFlow/
 ## 💻 Installation & Setup
 
 ### Prerequisites
-- Node.js (v18+)
+- Node.js (v24.13.1)
+- npm (11.7.0)
 - MySQL (v8.0+)
 
 ### Frontend Setup
@@ -244,7 +245,7 @@ cd campus_portal_backend
 npm install
 
 # Start backend server
-npm start
+npm start / node server.js  (only One used)
 ```
 
 ### Database Setup
