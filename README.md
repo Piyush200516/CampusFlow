@@ -24,6 +24,14 @@ A full-stack Campus Management System designed to manage academic and administra
 ## Fee_Depatment = fee@college.in
 ## password = Fee123@
 
+## email         | role       | password                                                     |
++---------------+------------+--------------------------------------------------------------+
+| cs@college.in | department   |  Cs123@
+
+
+email         | password                                                     |
++---------------+--------------------------------------------------------------+
+| ec@college.in | Ec123@
 ---
 ## 🏗️ Project Architecture
 
