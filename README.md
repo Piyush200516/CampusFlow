@@ -303,4 +303,11 @@ npm start / node server.js  (only One used)
 ---
 
 ## 📌 Author
+**Piyush Mishra**  
+B.Tech Student | Full Stack Web Developer  
 
+📧 Email: piyushmishra21052003@gmail.com
+🌐 GitHub: https://github.com/Piyush200516 
+📍 India  
+
+Developer of **CampusFlow - Campus Management System**
