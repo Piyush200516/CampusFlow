@@ -139,6 +139,13 @@ CampusFlow/
 
 ---
 
+## 🎯 Website Improvements
+- 📱 Mobile Responsive Design
+- 📄 Auto-generated PDF Receipts
+- 💳 Online Fee Payment Gateway Integration
+- 🔔 Real-time Notifications
+- 📧 Email Notifications
+
 ## 📋 Features
 
 ### 👨‍🎓 Student Module
@@ -275,12 +282,7 @@ npm start / node server.js  (only One used)
 
 ## 🎯 Future Improvements
 
-- 📱 Mobile Responsive Design
-- 📄 Auto-generated PDF Receipts
-- 💳 Online Fee Payment Gateway Integration
 - 📊 Advanced Analytics Dashboard
-- 🔔 Real-time Notifications
-- 📧 Email Notifications
 - 📱 Mobile Application
 
 ---
