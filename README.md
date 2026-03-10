@@ -139,6 +139,9 @@ CampusFlow/
 
 ---
 
+
+## 📋 Features
+
 ## 🎯 Website Improvements
 - 📱 Mobile Responsive Design
 - 📄 Auto-generated PDF Receipts
@@ -146,7 +149,6 @@ CampusFlow/
 - 🔔 Real-time Notifications
 - 📧 Email Notifications
 
-## 📋 Features
 
 ### 👨‍🎓 Student Module
 - 📊 Student Dashboard (Overview)
