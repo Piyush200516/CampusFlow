@@ -47,7 +47,7 @@ export default function Sidebar({ onClose }) {
   ];
 
   return (
-    <div className={`${collapsed ? "w-20" : "w-72"} h-screen flex flex-col transition-all duration-300 ${
+    <div className={`${collapsed ? "w-20" : "w-72"} h-full flex flex-col transition-all duration-300 ${
       isDarkMode ? "bg-gray-800" : "bg-white"
     }`}>
       {/* Logo Section */}

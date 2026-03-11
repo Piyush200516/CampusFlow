@@ -26,7 +26,7 @@ export default function CDCSidebar({ onClose }) {
   ];
 
   return (
-    <div className={`${collapsed ? "w-20" : "w-72"} h-screen bg-gray-800 flex flex-col`}>
+    <div className={`${collapsed ? "w-20" : "w-72"} h-full bg-gray-800 flex flex-col`}>
       <div className="p-4 border-b border-gray-700">
         <div className="flex items-center justify-between">
           {!collapsed && (

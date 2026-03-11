@@ -1,12 +1,129 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Shield, Key, User, Mail, Smartphone, Bell, Lock, Eye, EyeOff } from "lucide-react";
 import { useDarkMode } from "../../context/DarkModeContext";
+import API from "../../services/api";
 
 export default function Settings() {
   const { isDarkMode } = useDarkMode();
   const [activeTab, setActiveTab] = useState("profile");
   const [mfaMethod, setMfaMethod] = useState("email");
   const [showPasswords, setShowPasswords] = useState({});
+  const [loading, setLoading] = useState(true);
+  
+  // Student data state
+  const [studentData, setStudentData] = useState({
+    full_name: "",
+    email: "",
+    rgpv_enrollment_no: "",
+    institute_enrollment_no: "",
+    course: "",
+    branch: "",
+    batch_year: "",
+    section: ""
+  });
+
+  // Get user ID from localStorage
+  const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+  const user_id = userData?.id;
+  const storedEmail = localStorage.getItem("studentEmail");
+
+  // Fetch student data from API (Information Form data)
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      if (!user_id) {
+        // Fallback to localStorage data if no user_id
+        const profileData = localStorage.getItem("studentProfile");
+        const localUserData = localStorage.getItem("userData");
+        
+        if (profileData) {
+          const profile = JSON.parse(profileData);
+          setStudentData({
+            full_name: profile.full_name || profile.student_info?.full_name || "",
+            email: storedEmail || profile.email || profile.student_info?.email || "",
+            rgpv_enrollment_no: profile.rgpv_enrollment_no || profile.student_info?.rgpv_enrollment || "",
+            institute_enrollment_no: profile.institute_enrollment_no || profile.student_info?.institute_enrollment || "",
+            course: profile.course || profile.student_info?.course || "",
+            branch: profile.branch || profile.student_info?.branch || "",
+            batch_year: profile.batch_year || profile.student_info?.batch_year || "",
+            section: profile.section || profile.student_info?.section || ""
+          });
+        } else if (localUserData) {
+          const user = JSON.parse(localUserData);
+          setStudentData({
+            full_name: user.full_name || "",
+            email: storedEmail || user.email || "",
+            rgpv_enrollment_no: user.rgpv_enrollment_no || "",
+            institute_enrollment_no: user.institute_enrollment_no || "",
+            course: user.course || "",
+            branch: user.branch || "",
+            batch_year: user.batch_year || "",
+            section: user.section || ""
+          });
+        }
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Fetch from Information Form API
+        const response = await API.get(`/api/student/info/${user_id}`);
+        if (response.data && response.data.id) {
+          const info = response.data;
+          setStudentData({
+            full_name: info.full_name || "",
+            email: info.college_email || storedEmail || "",
+            rgpv_enrollment_no: info.rgpv_enrollment || "",
+            institute_enrollment_no: info.institute_enrollment || "",
+            course: info.course || "",
+            branch: info.branch || "",
+            batch_year: info.batch_year || "",
+            section: info.section || ""
+          });
+        } else {
+          // Fallback to localStorage
+          fetchLocalStorageData();
+        }
+      } catch (error) {
+        console.log("No information form data found, using localStorage");
+        fetchLocalStorageData();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchLocalStorageData = () => {
+      const profileData = localStorage.getItem("studentProfile");
+      const localUserData = localStorage.getItem("userData");
+      
+      if (profileData) {
+        const profile = JSON.parse(profileData);
+        setStudentData({
+          full_name: profile.full_name || profile.student_info?.full_name || "",
+          email: storedEmail || profile.email || profile.student_info?.email || "",
+          rgpv_enrollment_no: profile.rgpv_enrollment_no || profile.student_info?.rgpv_enrollment || "",
+          institute_enrollment_no: profile.institute_enrollment_no || profile.student_info?.institute_enrollment || "",
+          course: profile.course || profile.student_info?.course || "",
+          branch: profile.branch || profile.student_info?.branch || "",
+          batch_year: profile.batch_year || profile.student_info?.batch_year || "",
+          section: profile.section || profile.student_info?.section || ""
+        });
+      } else if (localUserData) {
+        const user = JSON.parse(localUserData);
+        setStudentData({
+          full_name: user.full_name || "",
+          email: storedEmail || user.email || "",
+          rgpv_enrollment_no: user.rgpv_enrollment_no || "",
+          institute_enrollment_no: user.institute_enrollment_no || "",
+          course: user.course || "",
+          branch: user.branch || "",
+          batch_year: user.batch_year || "",
+          section: user.section || ""
+        });
+      }
+    };
+    
+    fetchStudentData();
+  }, [user_id]);
 
   const tabs = [
     { id: "profile", label: "Profile", icon: <User size={18} /> },
@@ -113,14 +230,14 @@ export default function Settings() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-5">
-            <Input label="Full Name" value="Piyush Mishra" isDarkMode={isDarkMode} />
-            <Input label="College Email" value="piyushmishra240613@acropolis.in" isDarkMode={isDarkMode} />
-            <Input label="RGPV Enrollment Number" value="0827RL243D05" isDarkMode={isDarkMode} />
-            <Input label="Institute Enrollment Number" value="0827RL243D05" isDarkMode={isDarkMode} />
-            <Input label="Course" value="B_TECH" isDarkMode={isDarkMode} />
-            <Input label="Branch" value="CSE_RL" isDarkMode={isDarkMode} />
-            <Input label="Batch Year" value="2027" isDarkMode={isDarkMode} />
-            <Input label="Section" value="6" isDarkMode={isDarkMode} />
+            <Input label="Full Name" value={studentData.full_name} isDarkMode={isDarkMode} />
+            <Input label="College Email" value={studentData.email} isDarkMode={isDarkMode} />
+            <Input label="RGPV Enrollment Number" value={studentData.rgpv_enrollment_no} isDarkMode={isDarkMode} />
+            <Input label="Institute Enrollment Number" value={studentData.institute_enrollment_no} isDarkMode={isDarkMode} />
+            <Input label="Course" value={studentData.course} isDarkMode={isDarkMode} />
+            <Input label="Branch" value={studentData.branch} isDarkMode={isDarkMode} />
+            <Input label="Batch Year" value={studentData.batch_year} isDarkMode={isDarkMode} />
+            <Input label="Section" value={studentData.section} isDarkMode={isDarkMode} />
           </div>
 
           <div className={`mt-6 p-4 rounded-xl ${
