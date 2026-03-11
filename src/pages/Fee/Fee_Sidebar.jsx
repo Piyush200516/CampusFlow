@@ -1,81 +1,78 @@
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import {
-  LayoutDashboard,
-  FileText,
-  DollarSign,
-  CreditCard,
-  Users,
-  Settings,
-  LogOut
-} from "lucide-react";
-import { useDarkMode } from "../../context/DarkModeContext";
+import { LayoutDashboard, DollarSign, CreditCard, Users, Settings, LogOut, ChevronLeft, ChevronRight, X, Receipt } from "lucide-react";
 
-export default function FeeSidebar() {
+export default function FeeSidebar({ onClose }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isDarkMode } = useDarkMode();
+  const [collapsed, setCollapsed] = useState(false);
 
   const handleLogout = () => {
-    // Clear localStorage
     localStorage.removeItem("feeEmail");
-    // Navigate to login page
     navigate("/login");
+    if (onClose) onClose();
   };
 
   const menuItems = [
-    { name: "Dashboard", path: "/fee/dashboard", icon: <LayoutDashboard size={18} /> },
-    { name: "Fee Records", path: "/fee/records", icon: <FileText size={18} /> },
-    { name: "Student Fees", path: "/fee/student-fees", icon: <DollarSign size={18} /> },
-    { name: "Fee Update", path: "/fee/update", icon: <CreditCard size={18} /> },
-    { name: "TC Approval", path: "/fee/tc-approval", icon: <Users size={18} /> },
-    { name: "Settings", path: "/fee/settings", icon: <Settings size={18} /> },
+    { name: "Dashboard", path: "/fee/dashboard", icon: <LayoutDashboard size={20} /> },
+    { name: "Fee Records", path: "/fee/records", icon: <Receipt size={20} /> },
+    { name: "Update Fee", path: "/fee/update", icon: <CreditCard size={20} /> },
+    { name: "Student Fees", path: "/fee/student-fees", icon: <Users size={20} /> },
+    { name: "TC Approval", path: "/fee/tc-approval", icon: <DollarSign size={20} /> },
+    { name: "Settings", path: "/fee/settings", icon: <Settings size={20} /> },
   ];
 
   return (
-    <div className={`w-64 h-screen flex flex-col justify-between p-4 border-r transition-colors duration-300 ${
-      isDarkMode ? "bg-gray-800 border-gray-700" : "bg-gray-100"
-    }`}>
-
-      {/* Logo */}
-      <div>
-        <h2 className={`text-xl font-bold mb-6 transition-colors duration-300 ${
-          isDarkMode ? "text-white" : "text-gray-800"
-        }`}>Fee Portal</h2>
-
-        <nav className="flex flex-col gap-2">
-          {menuItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors duration-300
-                ${
-                  location.pathname === item.path
-                    ? isDarkMode ? "bg-gray-700 text-white font-semibold" : "bg-gray-300 font-semibold"
-                    : isDarkMode ? "hover:bg-gray-700 text-gray-300" : "hover:bg-gray-200"
-                }
-              `}
-            >
-              {item.icon}
-              <span className={isDarkMode ? "text-gray-200" : "text-gray-700"}>
-                {item.name}
-              </span>
-            </Link>
-          ))}
-        </nav>
+    <div className={`${collapsed ? "w-20" : "w-72"} h-screen bg-gray-800 flex flex-col`}>
+      <div className="p-4 border-b border-gray-700">
+        <div className="flex items-center justify-between">
+          {!collapsed && (
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-rose-600 rounded-xl flex items-center justify-center">
+                <DollarSign size={22} className="text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">Fee Portal</h2>
+                <p className="text-xs text-rose-400">Finance Department</p>
+              </div>
+            </div>
+          )}
+          {collapsed && (
+            <div className="w-10 h-10 bg-rose-600 rounded-xl flex items-center justify-center mx-auto">
+              <DollarSign size={22} className="text-white" />
+            </div>
+          )}
+          <div className="flex items-center gap-2">
+            {onClose && (
+              <button onClick={onClose} className="p-2 rounded-xl hover:bg-gray-700 text-gray-400 hover:text-white lg:hidden">
+                <X size={20} />
+              </button>
+            )}
+            <button onClick={() => setCollapsed(!collapsed)} className="p-2 rounded-xl hover:bg-gray-700 text-gray-400 hover:text-white hidden lg:flex">
+              {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Bottom Section */}
-      <div>
-        <button 
-          onClick={handleLogout}
-          className={`w-full flex items-center gap-2 border rounded-lg py-2 px-4 hover:bg-gray-200 transition-colors duration-300 ${
-            isDarkMode ? "bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600" : "bg-white border-gray-300 text-gray-700"
-          }`}
-        >
-          <LogOut size={18} />
-          Logout
+      <nav className="flex-1 p-4 overflow-y-auto">
+        <div className="space-y-1">
+          {menuItems.map((item) => (
+            <Link key={item.path} to={item.path} onClick={() => { if (onClose) onClose(); }} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${location.pathname === item.path ? "bg-rose-600 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"} ${collapsed ? "justify-center" : ""}`}>
+              {item.icon}
+              {!collapsed && <span className="font-medium">{item.name}</span>}
+            </Link>
+          ))}
+        </div>
+      </nav>
+
+      <div className="p-4 border-t border-gray-700">
+        <button onClick={handleLogout} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-900/30 w-full ${collapsed ? "justify-center" : ""}`}>
+          <LogOut size={20} />
+          {!collapsed && <span className="font-medium">Logout</span>}
         </button>
       </div>
     </div>
   );
 }
+

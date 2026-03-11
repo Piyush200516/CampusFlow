@@ -9,7 +9,7 @@ export default function CDCDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userData = localStorage.getItem("cdcUserData");
+    const userData = localStorage.getItem("userData");
     if (userData) {
       const user = JSON.parse(userData);
       setUserName(user.full_name || "CDC Admin");

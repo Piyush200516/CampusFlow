@@ -225,6 +225,54 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "OK", message: "Server is running" });
 });
 
+// ================== GET ATTENDANCE (with full_name, rgpv_enrollment, total_classes, present_classes, attendance_percentage) ===================
+app.get("/attendance", (req, res) => {
+  const sql = `
+    SELECT 
+      u.full_name,
+      s.rgpv_enrollment,
+      COUNT(a.id) AS total_classes,
+      SUM(a.status='Present') AS present_classes,
+      ROUND((SUM(a.status='Present')/COUNT(a.id))*100,2) AS attendance_percentage
+    FROM attendance a
+    JOIN student_info s ON a.student_id = s.id
+    JOIN users u ON s.user_id = u.id
+    GROUP BY a.student_id
+  `;
+
+  db.query(sql, (err, result) => {
+    if (err) return res.send(err);
+    res.json(result);
+  });
+});
+
+// ================== SAVE/UPDATE ATTENDANCE ===================
+app.post("/attendance", (req, res) => {
+  const { student_id, department_id, date, status, marked_by } = req.body;
+  
+  // Check if attendance already marked for this student on this date
+  const checkSql = "SELECT id FROM attendance WHERE student_id = ? AND date = ?";
+  db.query(checkSql, [student_id, date], (err, results) => {
+    if (err) return res.status(400).json({ error: err.sqlMessage });
+    
+    if (results.length > 0) {
+      // Update existing attendance
+      const updateSql = "UPDATE attendance SET status = ?, marked_by = ? WHERE student_id = ? AND date = ?";
+      db.query(updateSql, [status, marked_by, student_id, date], (err, result) => {
+        if (err) return res.status(400).json({ error: err.sqlMessage });
+        res.json({ message: "Attendance updated successfully" });
+      });
+    } else {
+      // Insert new attendance
+      const insertSql = "INSERT INTO attendance (student_id, department_id, date, status, marked_by) VALUES (?, ?, ?, ?, ?)";
+      db.query(insertSql, [student_id, department_id, date, status, marked_by], (err, result) => {
+        if (err) return res.status(400).json({ error: err.sqlMessage });
+        res.json({ message: "Attendance saved successfully" });
+      });
+    }
+  });
+});
+
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });

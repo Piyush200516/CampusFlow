@@ -9,6 +9,7 @@ import CDCLogin from "./pages/Auth/CDCLogin";
 import FeeLogin from "./pages/Auth/FeeLogin";
 import DepartmentLogin from "./pages/Auth/DepartmentLogin";
 
+// Student Layout Imports
 import StudentLayout from "./pages/Student/Layout";
 import StudentDashboard from "./pages/Student/Dashboard";
 import Internships from "./pages/Student/Internships";
@@ -53,83 +54,6 @@ import DepartmentVerifyForms from "./pages/Department/VerifyForms";
 import DepartmentSettings from "./pages/Department/Department_Settings";
 
 import { Outlet } from "react-router-dom";
-import { useDarkMode } from "./context/DarkModeContext";
-
-// ✅ Layout Component (Common Navbar for Students)
-function Layout() {
-  const { isDarkMode } = useDarkMode();
-
-  return (
-    <div style={{ display: "flex" }}>
-      <Sidebar />
-
-      <div style={{ flex: 1 }} className={`transition-colors duration-300 ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}>
-        <Topbar />
-
-        <div style={{ padding: "20px" }} className={`transition-colors duration-300 ${isDarkMode ? "bg-gray-900 min-h-screen" : "bg-gray-50 min-h-screen"}`}>
-          <Outlet />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ✅ Fee Layout Component (Common Navbar for Fee Department)
-function FeeLayout() {
-  const { isDarkMode } = useDarkMode();
-
-  return (
-    <div style={{ display: "flex" }}>
-      <FeeSidebar />
-
-      <div style={{ flex: 1 }} className={`transition-colors duration-300 ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}>
-        <FeeTopbar />
-
-        <div style={{ padding: "20px" }} className={`transition-colors duration-300 ${isDarkMode ? "bg-gray-900 min-h-screen" : "bg-gray-50 min-h-screen"}`}>
-          <Outlet />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ✅ CDC Layout Component (Common Navbar for CDC Department)
-function CDCLayout() {
-  const { isDarkMode } = useDarkMode();
-
-  return (
-    <div style={{ display: "flex" }}>
-      <CDCSidebar />
-
-      <div style={{ flex: 1 }} className={`transition-colors duration-300 ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}>
-        <CDCTopbar />
-
-        <div style={{ padding: "20px" }} className={`transition-colors duration-300 ${isDarkMode ? "bg-gray-900 min-h-screen" : "bg-gray-50 min-h-screen"}`}>
-          <Outlet />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ✅ Department Layout Component (Common Navbar for Department)
-function DeptLayout() {
-  const { isDarkMode } = useDarkMode();
-
-  return (
-    <div style={{ display: "flex" }}>
-      <DepartmentSidebar />
-
-      <div style={{ flex: 1 }} className={`transition-colors duration-300 ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}>
-        <DepartmentTopbar />
-
-        <div style={{ padding: "20px" }} className={`transition-colors duration-300 ${isDarkMode ? "bg-gray-900 min-h-screen" : "bg-gray-50 min-h-screen"}`}>
-          <Outlet />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function App() {
   return (
@@ -162,7 +86,7 @@ function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="Dashboard_Analytics" element={<Dashboard_Analytics/>} />
           <Route path="Administrative_Features" element={<Administrative_Features/>}/>
-         </Route>
+        </Route>
 
         {/* Fee Department Routes */}
         <Route path="/fee" element={<FeeLayout />}>
@@ -202,4 +126,50 @@ function App() {
   );
 }
 
+// ✅ Fee Layout Component
+function FeeLayout() {
+  return (
+    <div style={{ display: "flex" }}>
+      <FeeSidebar />
+      <div style={{ flex: 1, backgroundColor: "#f9fafb", minHeight: "100vh" }}>
+        <FeeTopbar />
+        <div style={{ padding: "20px" }}>
+          <Outlet />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ✅ CDC Layout Component
+function CDCLayout() {
+  return (
+    <div style={{ display: "flex" }}>
+      <CDCSidebar />
+      <div style={{ flex: 1, backgroundColor: "#f9fafb", minHeight: "100vh" }}>
+        <CDCTopbar />
+        <div style={{ padding: "20px" }}>
+          <Outlet />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ✅ Department Layout Component
+function DeptLayout() {
+  return (
+    <div style={{ display: "flex" }}>
+      <DepartmentSidebar />
+      <div style={{ flex: 1, backgroundColor: "#f9fafb", minHeight: "100vh" }}>
+        <DepartmentTopbar />
+        <div style={{ padding: "20px" }}>
+          <Outlet />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default App;
+

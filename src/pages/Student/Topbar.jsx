@@ -1,126 +1,118 @@
 import { useEffect, useState } from "react";
-import { Moon, Sun, Bell, Search, Menu, GraduationCap } from "lucide-react";
+import { Moon, Sun, Bell, Menu, GraduationCap, ChevronDown, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useDarkMode } from "../../context/DarkModeContext";
 
 export default function Navbar({ onMenuClick }) {
   const [email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
+  const [profileOpen, setProfileOpen] = useState(false);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedEmail = localStorage.getItem("studentEmail");
     const userData = localStorage.getItem("userData");
     
-    if (storedEmail) {
-      setEmail(storedEmail);
-    }
-    
+    if (storedEmail) setEmail(storedEmail);
     if (userData) {
       const user = JSON.parse(userData);
       setUserName(user.full_name || "");
     }
   }, []);
 
-  const getInitial = (name) => {
-    return name ? name.charAt(0).toUpperCase() : "U";
+  const getInitial = (name) => name ? name.charAt(0).toUpperCase() : "U";
+
+  const handleLogout = () => {
+    localStorage.removeItem("studentEmail");
+    localStorage.removeItem("userData");
+    navigate("/login");
   };
 
   return (
-    <div className={`w-full flex justify-between items-center px-4 md:px-6 py-3 shadow-lg transition-all duration-300 backdrop-blur-sm ${
-      isDarkMode 
-        ? "bg-gray-800/95 border-b border-gray-700" 
-        : "bg-white/95 border-b border-gray-100"
+    <div className={`w-full flex justify-between items-center px-4 md:px-6 py-3 border-b transition-colors duration-300 ${
+      isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
     }`}>
-
       {/* Left - Menu Button & Logo */}
       <div className="flex items-center gap-3">
-        {/* Mobile Menu Button */}
-        <button 
-          onClick={onMenuClick}
-          className={`lg:hidden p-2.5 rounded-xl transition-all duration-300 hover:scale-105 ${
-            isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-          }`}
-        >
-          <Menu size={24} className={isDarkMode ? "text-white" : "text-gray-700"} />
+        <button onClick={onMenuClick} className={`lg:hidden p-2.5 rounded-xl transition-colors ${
+          isDarkMode ? "hover:bg-gray-700 text-gray-300" : "hover:bg-gray-100 text-gray-700"
+        }`}>
+          <Menu size={24} />
         </button>
-
-        {/* Logo */}
-        <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-          <GraduationCap size={22} className="text-white" />
+        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+          <GraduationCap size={20} className="text-white" />
         </div>
-        <div className="hidden sm:block">
-          <h1 className={`text-lg font-bold tracking-tight transition-colors duration-300 ${
-            isDarkMode ? "text-white" : "text-gray-800"
-          }`}>
-            CampusFlow
-          </h1>
-          <p className={`text-xs font-medium transition-colors duration-300 ${
-            isDarkMode ? "text-blue-400" : "text-blue-600"
-          }`}>
-            Acropolis Institute
-          </p>
+        <div>
+          <h1 className={`text-lg font-bold ${isDarkMode ? "text-white" : "text-gray-800"}`}>CampusFlow</h1>
+          <p className={`text-xs ${isDarkMode ? "text-blue-400" : "text-blue-500"}`}>Acropolis Institute</p>
         </div>
-      </div>
-
-      {/* Search Bar - Hidden on mobile */}
-      <div className={`hidden md:flex items-center gap-2 px-4 py-2.5 rounded-2xl transition-all duration-300 ${
-        isDarkMode ? "bg-gray-700/50 border border-gray-600" : "bg-gray-100 border border-gray-200"
-      }`}>
-        <Search size={18} className={isDarkMode ? "text-gray-400" : "text-gray-500"} />
-        <input 
-          type="text" 
-          placeholder="Search..." 
-          className={`bg-transparent outline-none text-sm w-48 font-medium ${
-            isDarkMode ? "text-white placeholder-gray-400" : "text-gray-700 placeholder-gray-500"
-          }`}
-        />
       </div>
 
       {/* Right Side */}
       <div className="flex items-center gap-2 md:gap-3">
         {/* Notifications */}
-        <button
-          className={`p-2.5 rounded-xl transition-all duration-300 hover:scale-105 ${
-            isDarkMode 
-              ? "bg-gray-700/50 hover:bg-gray-600 border border-gray-600" 
-              : "bg-gray-100 hover:bg-gray-200 border border-gray-200"
-          }`}
-        >
-          <Bell size={18} className={isDarkMode ? "text-gray-300" : "text-gray-700"} />
+        <button className={`p-2.5 rounded-xl transition-colors ${
+          isDarkMode ? "bg-gray-700 hover:bg-gray-600 text-gray-300" : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+        }`}>
+          <Bell size={18} />
         </button>
 
-        {/* Dark Mode Toggle Button */}
+        {/* Dark Mode Toggle */}
         <button
           onClick={toggleDarkMode}
-          className={`p-2.5 rounded-xl transition-all duration-300 hover:scale-105 ${
+          className={`p-2.5 rounded-xl transition-all duration-300 ${
             isDarkMode 
-              ? "bg-gray-700/50 hover:bg-gray-600 border border-gray-600" 
-              : "bg-gray-100 hover:bg-gray-200 border border-gray-200"
+              ? "bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400" 
+              : "bg-blue-100 hover:bg-blue-200 text-blue-600"
           }`}
-          aria-label="Toggle dark mode"
         >
-          {isDarkMode 
-            ? <Sun size={18} className="text-yellow-400" /> 
-            : <Moon size={18} className="text-gray-700" />
-          }
+          {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
         </button>
         
-        {/* User Profile */}
-        <div className={`flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2 rounded-2xl transition-all duration-300 hover:scale-105 shadow-lg ${
-          isDarkMode 
-            ? "bg-gradient-to-r from-blue-600 to-purple-600" 
-            : "bg-gradient-to-r from-blue-500 to-purple-500"
-        }`}>
-          <div className="w-8 h-8 md:w-9 md:h-9 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-            <span className="text-white text-sm md:text-base font-bold">
-              {getInitial(userName)}
+        {/* User Profile Dropdown */}
+        <div className="relative">
+          <button 
+            onClick={() => setProfileOpen(!profileOpen)}
+            className={`flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 rounded-xl transition-all duration-300 ${
+              isDarkMode 
+                ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700" 
+                : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+            } text-white shadow-lg shadow-blue-500/25`}
+          >
+            <div className="w-7 h-7 md:w-8 md:h-8 bg-white/20 rounded-full flex items-center justify-center">
+              <span className="text-white text-sm font-bold">{getInitial(userName)}</span>
+            </div>
+            <span className="text-white text-sm font-semibold hidden sm:block">
+              {userName || email?.split('@')[0] || "Student"}
             </span>
-          </div>
-          <div className="hidden sm:block">
-            <span className="text-white text-sm font-semibold">
-              {userName || email || "Student"}
-            </span>
-          </div>
+            <ChevronDown size={16} className={`text-white/70 transition-transform ${profileOpen ? "rotate-180" : ""}`} />
+          </button>
+
+          {/* Dropdown Menu */}
+          {profileOpen && (
+            <div className={`absolute right-0 mt-2 w-48 md:w-56 rounded-xl shadow-xl border overflow-hidden z-50 ${
+              isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+            }`}>
+              <div className={`p-3 border-b ${isDarkMode ? "border-gray-700" : "border-gray-100"}`}>
+                <p className={`font-semibold text-sm ${isDarkMode ? "text-white" : "text-gray-800"}`}>
+                  {userName || "Student"}
+                </p>
+                <p className={`text-xs ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
+                  {email || "No email"}
+                </p>
+              </div>
+              <button 
+                onClick={handleLogout}
+                className={`w-full flex items-center gap-2 px-4 py-3 text-left transition-colors ${
+                  isDarkMode ? "text-red-400 hover:bg-red-900/30" : "text-red-600 hover:bg-red-50"
+                }`}
+              >
+                <LogOut size={18} />
+                <span className="text-sm font-medium">Logout</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
