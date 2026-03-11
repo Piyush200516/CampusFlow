@@ -14,8 +14,11 @@ A small portion (05–15%) involved Vibe Coding to accelerate development, assis
 
 ---
 
-## 🚀 Project Status
+## 🚧 Project Status
 
+🟢 CampusFlow project is currently about 70% complete.
+🟢 Core modules like Student Dashboard, CDC Panel, Department Panel and Database integration are implemented.
+----
 🟢 **Student Dashboard** – Completed  
 🟢 **CDC Panel** – Completed  
 🟢 **Department Panel** – Completed  
@@ -317,10 +320,7 @@ npm start / node server.js  (only One used)
 B.Tech Student | Full Stack Web Developer  
 
 📧 Email: piyushmishra21052003@gmail.com
-🌐 GitHub: https://github.com/Piyush200516
-💻 Portfolio: https://piyush-portfolio-website-dx18.vercel.app/ 
-
-
+🌐 GitHub: https://github.com/Piyush200516 
 📍 India  
 
 Developer of **CampusFlow - Campus Management System**
