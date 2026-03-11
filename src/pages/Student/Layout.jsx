@@ -27,7 +27,7 @@ export default function Layout() {
   }, [isMobile]);
 
   return (
-    <div className={`flex min-h-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}>
+    <div className={`flex h-screen overflow-hidden ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}>
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
@@ -38,14 +38,14 @@ export default function Layout() {
       
       {/* Sidebar - Hidden on mobile unless opened */}
       <div className={`
-        fixed lg:static inset-y-0 left-0 z-50 transform transition-all duration-300 lg:transform-none
+        fixed lg:static inset-y-0 left-0 z-50 transform transition-all duration-300 lg:transform-none h-full
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
         <Sidebar onClose={() => setSidebarOpen(false)} />
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
         <Topbar onMenuClick={() => setSidebarOpen(true)} />
         <main 
           className={`flex-1 p-4 md:p-6 overflow-auto transition-colors duration-300 ${
