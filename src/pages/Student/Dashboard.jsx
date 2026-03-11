@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { CheckCircle, Download, Clock, Briefcase, Building2, TrendingUp, Users, FileText, Award, ArrowRight, Sparkles } from "lucide-react";
+import { CheckCircle, Download, Clock, Briefcase, Building2, TrendingUp, Users, FileText, Award, ArrowRight, Sparkles, Mail, Phone, MapPin, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDarkMode } from "../../context/DarkModeContext";
+import API from "../../services/api";
 
 export default function StudentDashboard() {
   const { isDarkMode } = useDarkMode();
@@ -9,26 +10,78 @@ export default function StudentDashboard() {
   const [enrollmentNo, setEnrollmentNo] = useState("");
   const [course, setCourse] = useState("");
   const [branch, setBranch] = useState("");
+  const [batchYear, setBatchYear] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
   const [attendance, setAttendance] = useState(0);
+  const [attendanceData, setAttendanceData] = useState({ total_classes: 0, present_classes: 0 });
   const [applications, setApplications] = useState(0);
   const [internships, setInternships] = useState(0);
   const [placements, setPlacements] = useState(0);
+  const [formStatus, setFormStatus] = useState("");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userData = localStorage.getItem("userData");
-    if (userData) {
-      const user = JSON.parse(userData);
-      setUserName(user.full_name || "");
-      setEnrollmentNo(user.rgpv_enrollment_no || user.enrollment || "");
-      setCourse(user.course || "");
-      setBranch(user.branch || "");
-      // Simulated real data - in production, fetch from API
-      setAttendance(85 + Math.floor(Math.random() * 10));
-      setApplications(Math.floor(Math.random() * 8));
-      setInternships(Math.floor(Math.random() * 3));
-      setPlacements(Math.floor(Math.random() * 2));
-    }
+    const fetchStudentData = async () => {
+      // First try to get complete profile from localStorage
+      const profileData = localStorage.getItem("studentProfile");
+      const userData = localStorage.getItem("userData");
+      
+      if (profileData) {
+        const profile = JSON.parse(profileData);
+        setUserName(profile.full_name || profile.student_info?.full_name || "");
+        setEnrollmentNo(profile.rgpv_enrollment_no || profile.student_info?.rgpv_enrollment || "");
+        setCourse(profile.course || profile.student_info?.course || "");
+        setBranch(profile.branch || profile.student_info?.branch || "");
+        setBatchYear(profile.batch_year || profile.student_info?.batch_year || "");
+        setEmail(profile.email || "");
+        setMobile(profile.student_info?.mobile || "");
+        setFormStatus(profile.student_info?.status || "");
+      } else if (userData) {
+        const user = JSON.parse(userData);
+        setUserName(user.full_name || "");
+        setEnrollmentNo(user.rgpv_enrollment_no || "");
+        setCourse(user.course || "");
+        setBranch(user.branch || "");
+        setBatchYear(user.batch_year || "");
+        setEmail(user.email || "");
+      }
+      
+      // Fetch attendance from API
+      try {
+        const userDataObj = userData ? JSON.parse(userData) : (profileData ? JSON.parse(profileData) : null);
+        if (userDataObj && userDataObj.id) {
+          const attendanceResponse = await API.get(`/api/student/attendance/${userDataObj.id}`);
+          if (attendanceResponse.data) {
+            setAttendanceData(attendanceResponse.data);
+            setAttendance(attendanceResponse.data.attendance_percentage || 0);
+          }
+          
+          // Fetch application status
+          const appsResponse = await API.get(`/api/student/applications/${userDataObj.id}`);
+          if (appsResponse.data) {
+            setApplications(appsResponse.data.applications || 0);
+            if (!formStatus && appsResponse.data.form_status) {
+              setFormStatus(appsResponse.data.form_status);
+            }
+          }
+        }
+      } catch (error) {
+        console.log("Could not fetch student data from API");
+        // Use simulated data as fallback
+        setAttendance(85 + Math.floor(Math.random() * 10));
+        setApplications(Math.floor(Math.random() * 8));
+      }
+      
+      // These would come from actual data when implemented
+      setInternships(0);
+      setPlacements(0);
+      
+      setLoading(false);
+    };
+
+    fetchStudentData();
   }, []);
 
   const stats = [

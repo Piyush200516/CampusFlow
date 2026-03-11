@@ -58,6 +58,16 @@ const StudentLogin = () => {
         localStorage.setItem("studentEmail", email);
         localStorage.setItem("userRole", "student");
         localStorage.setItem("userData", JSON.stringify(user));
+        
+        // Fetch complete student profile and store
+        try {
+          const profileResponse = await API.get(`/api/student/profile/${user.id}`);
+          if (profileResponse.data) {
+            localStorage.setItem("studentProfile", JSON.stringify(profileResponse.data));
+          }
+        } catch (profileError) {
+          console.log("Could not fetch complete profile, using basic info");
+        }
 
         navigate("/dashboard");
       } else {

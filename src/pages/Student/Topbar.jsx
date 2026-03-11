@@ -6,19 +6,42 @@ import { useDarkMode } from "../../context/DarkModeContext";
 export default function Navbar({ onMenuClick }) {
   const [email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
+  const [enrollmentNo, setEnrollmentNo] = useState("");
+  const [course, setCourse] = useState("");
+  const [branch, setBranch] = useState("");
   const [profileOpen, setProfileOpen] = useState(false);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedEmail = localStorage.getItem("studentEmail");
-    const userData = localStorage.getItem("userData");
+    const fetchUserData = () => {
+      // First try to get complete profile from localStorage
+      const profileData = localStorage.getItem("studentProfile");
+      const userData = localStorage.getItem("userData");
+      const storedEmail = localStorage.getItem("studentEmail");
+      
+      if (storedEmail) setEmail(storedEmail);
+      
+      if (profileData) {
+        const profile = JSON.parse(profileData);
+        setUserName(profile.full_name || profile.student_info?.full_name || "");
+        setEnrollmentNo(profile.rgpv_enrollment_no || profile.student_info?.rgpv_enrollment || "");
+        setCourse(profile.course || profile.student_info?.course || "");
+        setBranch(profile.branch || profile.student_info?.branch || "");
+      } else if (userData) {
+        const user = JSON.parse(userData);
+        setUserName(user.full_name || "");
+        setEnrollmentNo(user.rgpv_enrollment_no || "");
+        setCourse(user.course || "");
+        setBranch(user.branch || "");
+      }
+    };
     
-    if (storedEmail) setEmail(storedEmail);
-    if (userData) {
-      const user = JSON.parse(userData);
-      setUserName(user.full_name || "");
-    }
+    fetchUserData();
+    
+    // Listen for storage changes
+    window.addEventListener('storage', fetchUserData);
+    return () => window.removeEventListener('storage', fetchUserData);
   }, []);
 
   const getInitial = (name) => name ? name.charAt(0).toUpperCase() : "U";
@@ -26,6 +49,7 @@ export default function Navbar({ onMenuClick }) {
   const handleLogout = () => {
     localStorage.removeItem("studentEmail");
     localStorage.removeItem("userData");
+    localStorage.removeItem("studentProfile");
     navigate("/login");
   };
 

@@ -220,6 +220,101 @@ app.get("/api/cdc/student/:id", (req, res) => {
   });
 });
 
+// ================== GET COMPLETE STUDENT PROFILE ==================
+app.get("/api/student/profile/:user_id", (req, res) => {
+  const userId = req.params.user_id;
+  
+  // First get user basic info
+  const userSql = "SELECT * FROM users WHERE id = ?";
+  db.query(userSql, [userId], async (err, userResults) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (userResults.length === 0) return res.status(404).json({ error: "User not found" });
+    
+    const user = userResults[0];
+    
+    // Then get student_info if exists
+    const studentInfoSql = "SELECT * FROM student_info WHERE user_id = ?";
+    db.query(studentInfoSql, [userId], (err, studentInfoResults) => {
+      if (err) return res.status(500).json({ error: err.message });
+      
+      const studentInfo = studentInfoResults.length > 0 ? studentInfoResults[0] : null;
+      
+      // Combine data
+      const profile = {
+        ...user,
+        student_info: studentInfo
+      };
+      
+      res.json(profile);
+    });
+  });
+});
+
+// ================== GET STUDENT'S ATTENDANCE ==================
+app.get("/api/student/attendance/:user_id", (req, res) => {
+  const userId = req.params.user_id;
+  
+  // First get student_info id for this user
+  const studentInfoSql = "SELECT id FROM student_info WHERE user_id = ?";
+  db.query(studentInfoSql, [userId], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length === 0) {
+      return res.json({ 
+        total_classes: 0, 
+        present_classes: 0, 
+        attendance_percentage: 0 
+      });
+    }
+    
+    const studentId = results[0].id;
+    
+    // Get attendance stats
+    const attendanceSql = `
+      SELECT 
+        COUNT(a.id) AS total_classes,
+        SUM(CASE WHEN a.status = 'Present' THEN 1 ELSE 0 END) AS present_classes,
+        ROUND((SUM(CASE WHEN a.status = 'Present' THEN 1 ELSE 0 END) / COUNT(a.id)) * 100, 2) AS attendance_percentage
+      FROM attendance a
+      WHERE a.student_id = ?
+    `;
+    
+    db.query(attendanceSql, [studentId], (err, attendanceResults) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json(attendanceResults[0] || { 
+        total_classes: 0, 
+        present_classes: 0, 
+        attendance_percentage: 0 
+      });
+    });
+  });
+});
+
+// ================== GET STUDENT'S APPLICATION COUNT ==================
+app.get("/api/student/applications/:user_id", (req, res) => {
+  // For now, return a placeholder - this can be connected to actual applications table
+  // when that functionality is implemented
+  const userId = req.params.user_id;
+  
+  // Check if student has submitted info
+  const sql = "SELECT id, status FROM student_info WHERE user_id = ?";
+  db.query(sql, [userId], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    
+    if (results.length === 0) {
+      return res.json({ 
+        applications: 0, 
+        form_submitted: false 
+      });
+    }
+    
+    res.json({ 
+      applications: 0, 
+      form_submitted: true,
+      form_status: results[0].status
+    });
+  });
+});
+
 // Health check
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK", message: "Server is running" });
