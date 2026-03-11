@@ -17,7 +17,6 @@ A small portion (05–15%) involved Vibe Coding to accelerate development, assis
 ## 🚧 Project Status
 
 🟢 CampusFlow project is currently about 70% complete.
-🟢 Core modules like Student Dashboard, CDC Panel, Department Panel and Database integration are implemented.
 ----
 🟢 **Student Dashboard** – Completed  
 🟢 **CDC Panel** – Completed  
