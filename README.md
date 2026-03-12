@@ -8,9 +8,9 @@ A full-stack Campus Management System designed to manage academic and administra
 
 This project was primarily developed through manual coding and independent problem-solving.
 
-Approximately 85–95% of the codebase was written manually, demonstrating hands-on experience in full-stack development, database design, and system integration.
+Approximately 75-80% of the codebase was written manually, demonstrating hands-on experience in full-stack development, database design, and system integration.
 
-A small portion (05–15%) involved Vibe Coding to accelerate development, assist with debugging, and improve development efficiency
+A small portion (20-25%) involved Vibe Coding to accelerate development, assist with debugging, and improve development efficiency
 
 ---
 
