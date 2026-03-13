@@ -16,7 +16,7 @@ A small portion 20-25% involved Vibe Coding to accelerate development, assist wi
 
 ## 🚧 Project Status
 
-🟢 CampusFlow project is currently about 70% complete.
+🟢 CampusFlow project is currently about 50% complete.
 ----
 🟢 **Student Dashboard** – Completed  
 🟢 **CDC Panel** – Completed  
