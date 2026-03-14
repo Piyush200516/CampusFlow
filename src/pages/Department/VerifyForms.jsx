@@ -27,7 +27,10 @@ export default function VerifyForms() {
       setLoading(true);
       // Get all students for this department (not just pending)
       const response = await API.get(`/api/department/students/${department_id}`);
-      setForms(response.data);
+      setForms(response.data || []);
+      if (!response.data || response.data.length === 0) {
+        console.warn("No forms data - check department ID or backend");
+      }
     } catch (error) {
       console.error("Error fetching forms:", error);
     } finally {

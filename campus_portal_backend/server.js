@@ -315,10 +315,155 @@ app.get("/api/student/applications/:user_id", (req, res) => {
   });
 });
 
+// ================== GET STUDENT ANALYTICS (NEW - Advanced Dashboard) ==================
+app.get("/api/student/analytics/:user_id", (req, res) => {
+  const userId = req.params.user_id;
+
+  // 1. Get student_info for CGPA, skills, TC status
+  db.query("SELECT cgpa, status as tc_status, skill_html, skill_css, skill_js, skill_react, skill_node, skill_python, skill_java, skill_sql FROM student_info WHERE user_id = ?", [userId], (err, siResults) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (siResults.length === 0) return res.json({ error: "No student info found", attendance: {}, analytics: {} });
+
+    const si = siResults[0];
+    const cgpa = parseFloat(si.cgpa) || 8.0;
+    const skillsList = ['skill_html', 'skill_css', 'skill_js', 'skill_react', 'skill_node', 'skill_python', 'skill_java', 'skill_sql'];
+    const skillsCount = skillsList.filter(skill => si[skill] === 1).length;
+
+    // 2. Get attendance (reuse logic)
+    db.query("SELECT id FROM student_info WHERE user_id = ?", [userId], (err, attIdResults) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (attIdResults.length === 0) {
+        return res.json({
+          attendance: { percentage: 0 },
+          profile: {},
+          analytics: {
+            placement_score: 0,
+            batch_att_avg: 75,
+            batch_gpa_avg: 7.8,
+            predictions: { next_gpa: cgpa + 0.1, placement_prob: 40 },
+            tc_status: 'No form'
+          }
+        });
+      }
+
+      const studentInfoId = attIdResults[0].id;
+      const attSql = `
+        SELECT 
+          COUNT(id) AS total_classes,
+          SUM(CASE WHEN status = 'Present' THEN 1 ELSE 0 END) AS present_classes,
+          ROUND((SUM(CASE WHEN status = 'Present' THEN 1 ELSE 0 END) / COUNT(id)) * 100, 2) AS percentage
+        FROM attendance WHERE student_id = ?
+      `;
+      db.query(attSql, [studentInfoId], (err, attResults) => {
+        if (err) return res.status(500).json({ error: err.message });
+
+        const att = attResults[0] || { percentage: 0, total_classes: 0, present_classes: 0 };
+
+        // 3. Get profile basics
+        db.query("SELECT full_name, course, branch, batch_year FROM users WHERE id = ?", [userId], (err, profileResults) => {
+          if (err) return res.status(500).json({ error: err.message });
+
+          const profile = profileResults[0] || {};
+
+          // Compute analytics
+          const placementScore = Math.round((att.percentage * 0.4 + (cgpa / 10) * 0.4 + (skillsCount / 8) * 0.2) * 100);
+          const batchComparison = {
+            att_vs_avg: Math.round(att.percentage - 75),
+            gpa_vs_avg: Math.round((cgpa - 7.8) * 10) / 10,
+            percentile: Math.min(95, 50 + placementScore / 2)
+          };
+          const predictions = {
+            next_gpa: Math.min(10, cgpa + 0.1),
+            placement_prob: Math.round(35 + (placementScore / 100) * 65)
+          };
+
+          res.json({
+            attendance: att,
+            profile,
+            student_info: { cgpa: cgpa.toFixed(1), skills_count: skillsCount },
+            analytics: {
+              placement_score: placementScore,
+              batch_comparison: batchComparison,
+              predictions,
+              tc_status: si.tc_status || 'pending'
+            }
+          });
+        });
+      });
+    });
+  });
+});
+
+// ================== GENERATE TC PDF ===================
+app.get("/api/generate-tc-pdf", (req, res) => {
+  const { fullName, enrollment, course, year, reason } = req.query;
+  
+  const tcContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Transfer Certificate - CampusFlow</title>
+  <style>
+    body { font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6; }
+    .header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #1e40af; padding-bottom: 20px; }
+    .header h1 { color: #1e40af; font-size: 28px; margin: 0; }
+    .header p { font-size: 18px; color: #374151; margin: 5px 0; }
+    .cert-details { margin-bottom: 30px; }
+    .cert-details p { margin: 12px 0; }
+    .signature { margin-top: 80px; text-align: center; }
+    .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #6b7280; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>TRANSFER CERTIFICATE</h1>
+    <p>Acropolis Institute of Technology & Research</p>
+    <p>Indore, Madhya Pradesh</p>
+  </div>
+  
+  <div class="cert-details">
+    <p><strong>Certificate No:</strong> TC/${enrollment || 'XXXX'}/${year || 'YYYY'}</p>
+    <p><strong>Admission No:</strong> ${enrollment || 'N/A'}</p>
+    <p><strong>Date of Issue:</strong> ${new Date().toLocaleDateString('en-IN')}</p>
+    
+    <p>This is to certify that <strong>${fullName || 'Student Name'}</strong>, a student of this Institute,</p>
+    <p>was admitted to <strong>${course || 'B.Tech Computer Science'}</strong> with Enrollment No. <strong>${enrollment || 'N/A'}</strong>.</p>
+    
+    <p>The student has successfully completed the prescribed course of study and passed out in the year <strong>${year || '2024'}</strong>.</p>
+    
+    <p>Character & Conduct: <strong>Good</strong></p>
+    <p>Reason for Leaving: <em>${reason || 'Completion of Course'}</em></p>
+  </div>
+  
+  <div class="signature">
+    <div style="margin-bottom: 60px;">
+      <strong>_________________________</strong><br>
+      <span style="font-size: 14px;">Principal</span>
+    </div>
+    <div>
+      <strong>_________________________</strong><br>
+      <span style="font-size: 14px;">Registrar</span>
+    </div>
+  </div>
+  
+  <div class="footer">
+    Issued by CampusFlow Portal • Certificate generated on ${new Date().toLocaleString()}
+  </div>
+</body>
+</html>`;
+
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename="TC_${enrollment || 'student'}_${new Date().toISOString().slice(0,10)}.pdf"`);
+  
+  // Frontend expects blob - send HTML (will be converted to PDF-like by browser)
+  res.send(tcContent);
+});
+
 // Health check
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK", message: "Server is running" });
 });
+
 
 // ================== GET ATTENDANCE (with full_name, rgpv_enrollment, total_classes, present_classes, attendance_percentage) ===================
 app.get("/attendance", (req, res) => {

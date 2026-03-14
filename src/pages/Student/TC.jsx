@@ -51,10 +51,12 @@ export default function TCApplication() {
         year: form.year || "",
         reason: form.reason || "",
       });
-      const response = await fetch(`/api/generate-tc-pdf?${params}`, { method: "GET" });
-      if (!response.ok) throw new Error(`Failed to generate TC PDF: ${response.status}`);
+      const response = await fetch(`http://localhost:3000/api/generate-tc-pdf?${params}`, { method: "GET" });
+      if (!response.ok) throw new Error(`Backend error: ${response.status} - Server may not be running`);
       const blob = await response.blob();
-      if (blob.size === 0) throw new Error("Empty PDF received");
+      if (blob.size === 0) {
+        throw new Error("Empty response from server");
+      }
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;

@@ -17,7 +17,10 @@ export default function StudentForms() {
     try {
       setLoading(true);
       const response = await API.get("/api/cdc/forms");
-      setStudents(response.data);
+      setStudents(response.data || []);
+      if (!response.data || response.data.length === 0) {
+        console.warn("No student data available - check database/backend");
+      }
     } catch (error) {
       console.error("Error fetching students:", error);
     } finally {
