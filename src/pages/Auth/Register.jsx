@@ -23,14 +23,36 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
-    if (!formData.full_name || !formData.email || !formData.enrollment_no || 
-        !formData.course || !formData.branch || !formData.passing_year || !formData.password) {
-      alert("Please fill all fields");
-      setLoading(false);
+    // Validation
+    const fullNameRegex = /^[a-zA-Z\\s]+$/;
+    const emailRegex = /^[a-zA-Z0-9]+@acropolis\\.in$/;
+    const enrollmentRegex = /^[0-9]{4}[A-Z]{2}[a-zA-Z0-9]*$/;
+    const yearRegex = /^[0-9]{4}$/;
+    const passwordRegex = /(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#$%^&*])[a-zA-Z0-9@#$%^&*]{6,}/;
+
+    if (!fullNameRegex.test(formData.full_name.trim())) {
+      alert('Full Name: Only alphabets allowed');
       return;
     }
+    if (!emailRegex.test(formData.email.trim())) {
+      alert('Email: Must end with @acropolis.in (alphabets/numbers before)');
+      return;
+    }
+    if (!enrollmentRegex.test(formData.enrollment_no.trim())) {
+      alert('RGPV Enrollment: 4 digits + 2 alphabets + anything (e.g. 1234AB)');
+      return;
+    }
+    if (!yearRegex.test(formData.passing_year)) {
+      alert('Batch Year: 4 digits only (e.g. 2025)');
+      return;
+    }
+    if (!passwordRegex.test(formData.password)) {
+      alert('Password: 1 letter, 3 numbers, 1 special (@#$%^&*), min 6 chars');
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const response = await API.post("/api/register", formData);

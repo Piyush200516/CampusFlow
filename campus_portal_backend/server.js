@@ -25,15 +25,25 @@ db.connect((err) => {
 // ================== STUDENT REGISTER ===================
 app.post("/api/register", async (req, res) => {
   const { full_name, email, password, enrollment_no, course, branch, passing_year } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
 
-  const sql = `INSERT INTO users (full_name,email,password,role,rgpv_enrollment_no,course,branch,batch_year)
-               VALUES (?,?,?,?,?,?,?,?)`;
-  db.query(sql, [full_name,email,hashedPassword,'student',enrollment_no,course,branch,passing_year], 
-  (err, result) => {
-    if(err) return res.status(400).json({ message: err.sqlMessage });
+  const checkSql = "SELECT id FROM users WHERE email = ? OR rgpv_enrollment_no = ?";
+  const dbPromise = db.promise();
+  try {
+    const [checkResults] = await dbPromise.query(checkSql, [email, enrollment_no]);
+    if (checkResults.length > 0) {
+      return res.status(409).json({ message: 'Account with this email or RGPV enrollment already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const sql = `INSERT INTO users (full_name,email,password,role,rgpv_enrollment_no,course,branch,batch_year)
+                 VALUES (?,?,?,?,?,?,?,?)`;
+    await dbPromise.query(sql, [full_name, email, hashedPassword, 'student', enrollment_no, course, branch, passing_year]);
     res.json({ message: "Student Registered Successfully" });
-  });
+  } catch (err) {
+    console.error('Register error:', err);
+    res.status(500).json({ message: err.message || 'Registration failed' });
+  }
 });
 
 // ================== LOGIN ===================
@@ -511,6 +521,51 @@ app.post("/attendance", (req, res) => {
       });
     }
   });
+});
+
+// ================== AI ASSISTANT ENDPOINT ===================
+require('dotenv').config();
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+const genAI = new GoogleGenerativeAI('AIzaSyDGlZsEYN1IOQMqUDsvuHGw8FyT6W0DhdY');
+
+app.post('/api/ai/chat', async (req, res) => {
+  const { message } = req.body;
+  
+  if (!message) {
+    return res.status(400).json({ error: 'Message is required' });
+  }
+  
+
+
+  try {
+    const systemPrompt = `You are CampusFlow AI Assistant for Acropolis Institute students.
+    
+Help with:
+- Fee status, payment process, due dates
+- Attendance percentage, improvement tips
+- Placement drives, internships, resume building
+- TC application, forms, approvals
+- Academic queries (syllabus, exams, CGPA)
+- Campus navigation, events, faculty contacts
+
+Student context: Acropolis Institute of Technology & Research, Indore. Engineering college.
+Use simple Hindi-English mix. Keep answers short (2-4 sentences).
+Be encouraging, positive, helpful.
+
+User message: "${message}"`;
+
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const result = await model.generateContent(systemPrompt + '\\nUser: ' + message);
+    const reply = result.response.text();
+    
+    res.json({ reply });
+  } catch (error) {
+    console.error('AI Error:', error);
+    res.status(500).json({ 
+      error: 'AI service unavailable: ' + error.message,
+      details: process.env.NODE_ENV === 'development' ? error.message : 'Try again later'
+    });
+  }
 });
 
 app.listen(3000, () => {

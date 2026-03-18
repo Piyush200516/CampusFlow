@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, DollarSign, CreditCard, Users, Settings, LogOut, ChevronLeft, ChevronRight, X, Receipt } from "lucide-react";
+import { useDarkMode } from "../../context/DarkModeContext";
 
 export default function FeeSidebar({ onClose }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const { isDarkMode } = useDarkMode();
 
   const handleLogout = () => {
     localStorage.removeItem("feeEmail");
@@ -23,8 +25,12 @@ export default function FeeSidebar({ onClose }) {
   ];
 
   return (
-    <div className={`${collapsed ? "w-20" : "w-72"} h-screen bg-gray-800 flex flex-col`}>
-      <div className="p-4 border-b border-gray-700">
+    <div className={`${collapsed ? "w-20" : "w-72"} h-full flex flex-col transition-all duration-300 ${
+      isDarkMode ? "bg-gray-800" : "bg-white"
+    }`}>
+
+      <div className={`p-4 border-b ${isDarkMode ? "border-gray-700" : "border-gray-100"}`}>
+
         <div className="flex items-center justify-between">
           {!collapsed && (
             <div className="flex items-center gap-3">
@@ -75,4 +81,3 @@ export default function FeeSidebar({ onClose }) {
     </div>
   );
 }
-

@@ -69,7 +69,7 @@ export default function Navbar({ onMenuClick }) {
         </div>
         <div>
           <h1 className={`text-lg font-bold ${isDarkMode ? "text-white" : "text-gray-800"}`}>CampusFlow</h1>
-          <p className={`text-xs ${isDarkMode ? "text-blue-400" : "text-blue-500"}`}>Acropolis Institute</p>
+          <p className={`text-xs ${isDarkMode ? "text-blue-400" : "text-blue-500"}`}>AITR</p>
         </div>
       </div>
 

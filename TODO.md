@@ -1,20 +1,12 @@
-# CampusFlow UI Modernization TODO
+# Fee Portal Topbar & Sidebar Implementation (Like Student Portal)
 
-## Status: In Progress
+## Steps:
+- [ ] Step 1: Update src/pages/Fee/Fee_Sidebar.jsx - Add full dark mode support, consistent gradients, active indicators matching Student Sidebar
+- [ ] Step 2: Update src/pages/Fee/Fee_Topbar.jsx - Fix duplicate state names, full dark mode polish matching Student Topbar
+- [ ] Step 3: Test fee portal navigation, responsive behavior, dark mode toggle
+- [ ] Step 4: Mark complete
 
-- [x] 1. Update tailwind.config.js with custom theme, colors, animations
-- [x] 2. Enhance src/index.css with glassmorphism, custom scrollbars, keyframe animations
-- [x] 3. Refactor CDC_Layout.jsx: Ensure fixed sidebar, sticky topbar, scrollable content, smooth mobile transitions
-- [x] 4. Refactor Department_Layout.jsx: Convert inline styles to Tailwind, add fixed/sticky/scrollable structure
-- [x] 5. Refactor Fee_Layout.jsx: Enhance main content scrolling, consistent transitions
-- [x] 6. Polish components: Card.jsx, Table.jsx (add shadows, hovers, responsive)
-- [ ] 7. Global page enhancements: Consistent spacing, buttons, forms in CDC/Dept/Fee pages
-- [ ] 8. Test responsive design (mobile/tablet/laptop), dark mode, performance
-- [ ] 9. Lint fix & optimize (remove unused imports)
-- [x] 10. Final completion
+**Status:** Starting implementation...
 
-**Notes:**
-- NO CHANGES to Student Portal files (src/pages/Student/*)
-- Run `npm run dev` after each major change to verify
-- Use Tailwind best practices: rounded-2xl, shadow-lg, backdrop-blur, transition-all duration-300
+**Original Task:** Make Fee portal topbar/sidebar like Student portal (already similar, polishing consistency)
 

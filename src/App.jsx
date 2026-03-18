@@ -22,6 +22,7 @@ import TC from "./pages/Student/TC";
 import Settings from "./pages/Student/Settings";
 import Dashboard_Analytics from "./pages/Student/Dashboard_Analytics";
 import Administrative_Features from "./pages/Student/Administrative_Features";
+import AIAssistant from "./pages/Student/AIAssistant";
 
 // Fee Department Imports
 import FeeSidebar from "./pages/Fee/Fee_Sidebar";
@@ -52,6 +53,13 @@ import DepartmentStudentList from "./pages/Department/StudentList";
 import DepartmentAttendanceUpdate from "./pages/Department/AttendanceUpdate";
 import DepartmentVerifyForms from "./pages/Department/VerifyForms";
 import DepartmentSettings from "./pages/Department/Department_Settings";
+
+// Admin Imports
+import AdminLayout from "./pages/Admin/AdminLayout";
+import AdminDashboard from "./pages/Admin/Dashboard";
+import AdminStudents from "./pages/Admin/Students";
+import AdminDepartments from "./pages/Admin/Departments";
+import AdminFees from "./pages/Admin/Fees";
 
 import { Outlet } from "react-router-dom";
 
@@ -86,10 +94,12 @@ function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="Dashboard_Analytics" element={<Dashboard_Analytics/>} />
           <Route path="Administrative_Features" element={<Administrative_Features/>}/>
+          <Route path="ai-assistant" element={<AIAssistant />} />
         </Route>
 
         {/* Fee Department Routes */}
-        <Route path="/fee" element={<FeeLayout />}>
+        <Route path="/fee/*" element={<FeeLayout_fixed />}>
+          <Route index element={<FeeDashboard />} />
           <Route path="dashboard" element={<FeeDashboard />} />
           <Route path="records" element={<FeeRecords />} />
           <Route path="student-fees" element={<StudentFees />} />
@@ -118,6 +128,15 @@ function App() {
           <Route path="settings" element={<DepartmentSettings />} />
         </Route>
 
+        {/* Admin Dashboard Routes */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="students" element={<AdminStudents />} />
+          <Route path="departments" element={<AdminDepartments />} />
+          <Route path="fees" element={<AdminFees />} />
+        </Route>
+
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/login" />} />
 
@@ -126,20 +145,7 @@ function App() {
   );
 }
 
-// ✅ Fee Layout Component
-function FeeLayout() {
-  return (
-    <div style={{ display: "flex" }}>
-      <FeeSidebar />
-      <div style={{ flex: 1, backgroundColor: "#f9fafb", minHeight: "100vh" }}>
-        <FeeTopbar />
-        <div style={{ padding: "20px" }}>
-          <Outlet />
-        </div>
-      </div>
-    </div>
-  );
-}
+import FeeLayout_fixed from "./pages/Fee/Fee_Layout_fixed.jsx";
 
 // ✅ CDC Layout Component
 function CDCLayout() {

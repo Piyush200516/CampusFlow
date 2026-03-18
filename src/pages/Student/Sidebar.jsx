@@ -15,6 +15,7 @@ import {
   X,
   UserCircle,
   BarChart3,
+  Brain,
   GraduationCap,
   Menu
 } from "lucide-react";
@@ -43,6 +44,7 @@ export default function Sidebar({ onClose }) {
     { name: "TC", path: "/TC", icon: <Users size={20} /> },
     { name: "Administrative Features", path: "/Administrative_Features", icon: <UserCircle size={20} /> },
     { name: "Dashboard Analytics", path: "/Dashboard_Analytics", icon: <BarChart3 size={20} /> },
+    { name: "🤖 AI Assistant", path: "/ai-assistant", icon: <Brain size={20} /> },
     { name: "Settings", path: "/settings", icon: <Settings size={20} /> },
   ];
 
