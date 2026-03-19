@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Moon, Sun, Bell, Menu, GraduationCap, ChevronDown, LogOut } from "lucide-react";
+import { Moon, Sun, Bell, Menu, GraduationCap, ChevronDown, LogOut, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDarkMode } from "../../context/DarkModeContext";
 
@@ -75,6 +75,19 @@ export default function Navbar({ onMenuClick }) {
 
       {/* Right Side */}
       <div className="flex items-center gap-2 md:gap-3">
+        {/* Portal Switcher */}
+        <button
+          onClick={() => navigate('/fee/student-fees')}
+          className={`p-2.5 rounded-xl transition-all duration-300 flex items-center gap-1 ${
+            isDarkMode 
+              ? "bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 hover:text-rose-300" 
+              : "bg-rose-100 hover:bg-rose-200 text-rose-600 hover:text-rose-700"
+          }`}
+          title="Fee Portal"
+        >
+          <DollarSign size={18} />
+        </button>
+
         {/* Notifications */}
         <button className={`p-2.5 rounded-xl transition-colors ${
           isDarkMode ? "bg-gray-700 hover:bg-gray-600 text-gray-300" : "bg-gray-100 hover:bg-gray-200 text-gray-700"

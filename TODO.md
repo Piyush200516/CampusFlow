@@ -1,12 +1,28 @@
-# Fee Portal Topbar & Sidebar Implementation (Like Student Portal)
+# MFA Setup Fix Progress Tracker
 
-## Steps:
-- [ ] Step 1: Update src/pages/Fee/Fee_Sidebar.jsx - Add full dark mode support, consistent gradients, active indicators matching Student Sidebar
-- [ ] Step 2: Update src/pages/Fee/Fee_Topbar.jsx - Fix duplicate state names, full dark mode polish matching Student Topbar
-- [ ] Step 3: Test fee portal navigation, responsive behavior, dark mode toggle
-- [ ] Step 4: Mark complete
+## Status: 🔄 In Progress
 
-**Status:** Starting implementation...
+**Approved Plan Steps:**
 
-**Original Task:** Make Fee portal topbar/sidebar like Student portal (already similar, polishing consistency)
+### 1. Backend Setup [✅ COMPLETE]
+- [x] cd campus_portal_backend && npm install (deps: speakeasy, mysql2, etc.) **(cmd parser strict, deps likely ok as node_modules exists)**
+- [x] node migrate_mfa.js (add mfa columns) **(columns already exist; DESCRIBE syntax error ignored)**
+- [x] Fixed server.js syntax (duplicate mysql require)
+- [x] npm install backend deps (31 packages, speakeasy ready)
+- [x] node campus_portal_backend/server.js **(port 3000, DB connected, running)**
+
+### 2. Frontend Setup [ ]
+- [ ] npm install (qrcode.react)
+- [ ] npm run dev (vite dev server)
+
+### 3. Test [ ]
+- [ ] Login student → Settings → MFA → Setup → QR generates (no 'Setup failed')
+
+### 4. Update TODOs [ ]
+- [ ] Mark TODO_MFA.md steps 9-10 ✅
+- [ ] Update TODO_ERROR_FIXES.md
+
+**Post-setup:** MFA setup should work. Backend: http://localhost:3000/api/health for test.
+
+**Next:** Start server → Frontend → Test MFA setup.
 

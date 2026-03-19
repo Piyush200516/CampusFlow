@@ -94,7 +94,7 @@ export default function StudentDashboard() {
   const quickActions = [
     { name: "Update Profile", icon: <FileText size={18} />, color: "blue", path: "/Information", gradient: "from-blue-500 to-purple-500" },
     { name: "View Internships", icon: <Briefcase size={18} />, color: "purple", path: "/internships", gradient: "from-purple-500 to-pink-500" },
-    { name: "Check Fee Status", icon: <Award size={18} />, color: "green", path: "/Fee", gradient: "from-green-500 to-emerald-500" },
+{ name: "Check Fee Status", icon: <Award size={18} />, color: "green", path: "/fee", gradient: "from-green-500 to-emerald-500" },
     { name: "Apply for TC", icon: <Users size={18} />, color: "orange", path: "/TC", gradient: "from-orange-500 to-amber-500" },
   ];
 

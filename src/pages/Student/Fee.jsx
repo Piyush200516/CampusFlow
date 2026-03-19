@@ -133,7 +133,7 @@ export default function FeeStatus() {
                   <td className="px-5 py-4">
                     {f.status === "Pending" && (
                       <button
-                        onClick={() => navigate("/pay-fee")}
+onClick={() => navigate("/fee/student-fees")}
                         className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 shadow-lg shadow-blue-500/25"
                       >
                         Pay Now

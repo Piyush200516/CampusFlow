@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, DollarSign, CreditCard, Users, Settings, LogOut, ChevronLeft, ChevronRight, X, Receipt } from "lucide-react";
+import { LayoutDashboard, DollarSign, CreditCard, Users, Settings, LogOut, ChevronLeft, ChevronRight, X, Receipt, GraduationCap } from "lucide-react";
 import { useDarkMode } from "../../context/DarkModeContext";
 
 export default function FeeSidebar({ onClose }) {
@@ -15,7 +15,8 @@ export default function FeeSidebar({ onClose }) {
     if (onClose) onClose();
   };
 
-  const menuItems = [
+const menuItems = [
+  { name: "Back to Student Portal", path: "/dashboard", icon: <GraduationCap size={20} /> },
     { name: "Dashboard", path: "/fee/dashboard", icon: <LayoutDashboard size={20} /> },
     { name: "Fee Records", path: "/fee/records", icon: <Receipt size={20} /> },
     { name: "Update Fee", path: "/fee/update", icon: <CreditCard size={20} /> },

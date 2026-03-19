@@ -3,18 +3,33 @@ const mysql = require("mysql2");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const speakeasy = require("speakeasy");
+const QRCode = require("qrcode");
 
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-const SECRET_KEY = "campus_portal_secret";
+const JWT_SECRET = process.env.JWT_SECRET || "campusflow_supersecret_2024_change_this_in_prod";
 
+// JWT Auth Middleware
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  if (!token) return res.status(401).json({ error: 'Access token required' });
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ error: 'Invalid token' });
+    req.user = user;
+    next();
+  });
+};
+
+// const mysql = require('mysql2'); // duplicate, already imported above
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "root",
-  database: "campus_portal"
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || 'root',
+  database: process.env.DB_NAME || 'campus_portal'
 });
 
 db.connect((err) => {
@@ -58,21 +73,143 @@ app.post("/api/login", (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if(!match) return res.status(401).json({ message: "Invalid password" });
 
-    const token = jwt.sign({ id: user.id, role: user.role, department_id: user.department_id }, SECRET_KEY, { expiresIn: "8h" });
-    res.json({ message: "Login Successful", token, role: user.role, department_id: user.department_id, user });
+    // Check if MFA enabled
+    if (user.mfa_enabled) {
+      const tempToken = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "5m" });
+      res.json({ 
+        message: "MFA required", 
+        needs_mfa: true, 
+        temp_token: tempToken, 
+        role: user.role, 
+        department_id: user.department_id,
+        user: { id: user.id, mfa_enabled: true }
+      });
+    } else {
+      const token = jwt.sign({ id: user.id, role: user.role, department_id: user.department_id }, JWT_SECRET, { expiresIn: "8h" });
+      res.json({ message: "Login Successful", token, role: user.role, department_id: user.department_id, user });
+    }
   });
 });
 
+// ================== MFA ROUTES ===================
+// Setup MFA - Generate secret and QR
+app.post("/api/mfa/setup", async (req, res) => {
+  const { userId } = req.body;
+  if (!userId) return res.status(400).json({ error: "userId required" });
+
+  const sql = "SELECT id FROM users WHERE id = ?";
+  db.query(sql, [userId], async (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length === 0) return res.status(404).json({ error: "User not found" });
+
+    const secret = speakeasy.generateSecret({
+      name: `CampusFlow (${userId})`,
+      issuer: "CampusFlow",
+      length: 32
+    });
+
+    // Update DB
+    const updateSql = "UPDATE users SET mfa_secret = ? WHERE id = ?";
+    db.query(updateSql, [secret.base32, userId], (err) => {
+      if (err) return res.status(500).json({ error: err.message });
+
+      // Generate QR data URL
+      QRCode.toDataURL(secret.otpauth_url, (err, data_url) => {
+        if (err) return res.status(500).json({ error: "QR generation failed" });
+        res.json({ 
+          secret: secret.base32,
+          qr_data_url: data_url,
+          otpauth_url: secret.otpauth_url,
+          message: "Scan QR with Google Authenticator" 
+        });
+      });
+    });
+  });
+});
+
+// Verify OTP
+app.post("/api/mfa/verify", (req, res) => {
+  const { userId, token } = req.body;
+  if (!userId || !token) return res.status(400).json({ error: "userId and token required" });
+
+  const sql = "SELECT mfa_secret FROM users WHERE id = ?";
+  db.query(sql, [userId], (err, results) => {
+    if (err || results.length === 0) return res.status(404).json({ error: "User not found" });
+
+    const verified = speakeasy.totp.verify({
+      secret: results[0].mfa_secret,
+      encoding: 'base32',
+      token,
+      window: 3,
+      epoch: Math.floor(Date.now() / 1000)
+    });
+
+    res.json({ verified });
+  });
+});
+
+// Enable MFA
+app.post("/api/mfa/enable", (req, res) => {
+  const { userId } = req.body;
+  const sql = "UPDATE users SET mfa_enabled = 1 WHERE id = ?";
+  db.query(sql, [userId], (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: "MFA enabled", affectedRows: result.affectedRows });
+  });
+});
+
+// Disable MFA
+app.post("/api/mfa/disable", (req, res) => {
+  const { userId } = req.body;
+  const sql = "UPDATE users SET mfa_enabled = 0, mfa_secret = NULL WHERE id = ?";
+  db.query(sql, [userId], (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: "MFA disabled", affectedRows: result.affectedRows });
+  });
+});
+
+// Login with MFA verify
+app.post("/api/mfa/login-verify", (req, res) => {
+  const { temp_token, token: otp } = req.body;
+  
+  try {
+    const decoded = jwt.verify(temp_token, JWT_SECRET);
+    const userId = decoded.id;
+
+    const sql = "SELECT * FROM users WHERE id = ?";
+    db.query(sql, [userId], (err, results) => {
+      if (err || results.length === 0) return res.status(401).json({ error: "Invalid temp token" });
+
+      const user = results[0];
+      const verified = speakeasy.totp.verify({
+        secret: user.mfa_secret,
+        encoding: 'base32',
+        token: otp,
+        window: 3,
+        epoch: Math.floor(Date.now() / 1000)
+      });
+
+      if (!verified) return res.status(401).json({ message: "Invalid OTP" });
+
+      const fullToken = jwt.sign({ id: user.id, role: user.role, department_id: user.department_id }, JWT_SECRET, { expiresIn: "8h" });
+      res.json({ message: "Login Successful", token: fullToken, role: user.role, department_id: user.department_id, user });
+    });
+  } catch (err) {
+    res.status(401).json({ error: "Invalid or expired temp token" });
+  }
+});
+
 // ================== GET STUDENTS ===================
-app.get("/students", (req, res) => {
-  const { role, department_id } = req.query;
+app.get("/students", authenticateToken, (req, res) => {
+  const role = req.user.role;
+  const department_id = req.query.department_id;
   let sql = "";
   let params = [];
 
   if(role === 'department') {
     sql = "SELECT id, full_name, email, rgpv_enrollment_no, course, branch, batch_year FROM users WHERE role='student' AND department_id=?";
     params.push(department_id);
-  } else if(role === 'cdc' || role === 'fee') {
+  } else if(role === 'cdc' || role === 'fee' || role === 'admin') {
     sql = "SELECT id, full_name, email, rgpv_enrollment_no, course, branch, batch_year, department_id FROM users WHERE role='student'";
   } else {
     return res.status(403).json({ error: "Not authorized" });
@@ -231,12 +368,15 @@ app.get("/api/cdc/student/:id", (req, res) => {
 });
 
 // ================== GET COMPLETE STUDENT PROFILE ==================
-app.get("/api/student/profile/:user_id", (req, res) => {
+app.get("/api/student/profile/:user_id", authenticateToken, (req, res) => {
   const userId = req.params.user_id;
+  if (req.user.id != userId && req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'Not authorized for this profile' });
+  }
   
   // First get user basic info
   const userSql = "SELECT * FROM users WHERE id = ?";
-  db.query(userSql, [userId], async (err, userResults) => {
+  db.query(userSql, [userId], (err, userResults) => {
     if (err) return res.status(500).json({ error: err.message });
     if (userResults.length === 0) return res.status(404).json({ error: "User not found" });
     
@@ -526,7 +666,7 @@ app.post("/attendance", (req, res) => {
 // ================== AI ASSISTANT ENDPOINT ===================
 require('dotenv').config();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const genAI = new GoogleGenerativeAI('AIzaSyDGlZsEYN1IOQMqUDsvuHGw8FyT6W0DhdY');
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'AIzaSyDGlZsEYN1IOQMqUDsvuHGw8FyT6W0DhdY');
 
 app.post('/api/ai/chat', async (req, res) => {
   const { message } = req.body;

@@ -2,13 +2,15 @@ import { useState, useEffect } from "react";
 import { Shield, Key, User, Mail, Smartphone, Bell, Lock, Eye, EyeOff } from "lucide-react";
 import { useDarkMode } from "../../context/DarkModeContext";
 import API from "../../services/api";
+import MFASetup from "../../components/MFASetup";
 
 export default function Settings() {
   const { isDarkMode } = useDarkMode();
   const [activeTab, setActiveTab] = useState("profile");
-  const [mfaMethod, setMfaMethod] = useState("email");
+  const [showMfaModal, setShowMfaModal] = useState(false);
   const [showPasswords, setShowPasswords] = useState({});
   const [loading, setLoading] = useState(true);
+  const [mfaStatus, setMfaStatus] = useState('disabled');
   
   // Student data state
   const [studentData, setStudentData] = useState({
@@ -255,69 +257,41 @@ export default function Settings() {
         <div className={`p-6 md:p-8 rounded-2xl shadow-xl ${
           isDarkMode ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-100"
         }`}>
-          <div className={`p-5 rounded-xl mb-6 ${
-            isDarkMode ? "bg-yellow-900/20 border border-yellow-800" : "bg-yellow-50 border border-yellow-200"
-          }`}>
-            <div className="flex items-start gap-3">
-              <Shield className="text-yellow-500 mt-0.5" size={22} />
-              <div>
-                <h3 className={`font-semibold ${isDarkMode ? "text-yellow-400" : "text-yellow-700"}`}>MFA is not enabled</h3>
-                <p className={`text-sm mt-1 ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
-                  Set up multi-factor authentication to secure your account.
-                </p>
+          <div className="space-y-4">
+            <div className={`p-4 rounded-xl ${
+              mfaStatus === 'enabled' 
+                ? 'bg-emerald-50 border border-emerald-200' 
+                : 'bg-yellow-50 border border-yellow-200'
+            }`}>
+              <div className="flex items-center gap-3">
+                <Shield className={`w-5 h-5 ${mfaStatus === 'enabled' ? 'text-emerald-600' : 'text-yellow-600'}`} />
+                <div>
+                  <p className={`font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                    {mfaStatus === 'enabled' ? 'MFA Enabled' : 'MFA Disabled'}
+                  </p>
+                  <p className="text-sm text-gray-600">Google Authenticator app</p>
+                </div>
               </div>
             </div>
-          </div>
-
-          <h2 className={`font-semibold mb-4 ${isDarkMode ? "text-white" : "text-gray-800"}`}>
-            Setup Multi-Factor Authentication
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-4 mb-6">
-            <div
-              onClick={() => setMfaMethod("email")}
-              className={`p-5 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
-                mfaMethod === "email"
-                  ? isDarkMode 
-                    ? "border-blue-500 bg-gray-700/50" 
-                    : "border-blue-500 bg-blue-50"
-                  : isDarkMode 
-                    ? "border-gray-600 hover:border-gray-500" 
-                    : "border-gray-200 hover:border-gray-300"
+            <button 
+              onClick={() => setShowMfaModal(true)}
+              className={`w-full py-3.5 rounded-xl font-semibold transition-all duration-300 ${
+                isDarkMode 
+                  ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25" 
+                  : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-blue-500/25"
               }`}
             >
-              <Mail className={`mb-3 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`} size={24} />
-              <h4 className={`font-semibold ${isDarkMode ? "text-white" : "text-gray-800"}`}>Email OTP</h4>
-              <p className={`text-sm mt-1 ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>Get codes via email</p>
-            </div>
-
-            <div
-              onClick={() => setMfaMethod("app")}
-              className={`p-5 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
-                mfaMethod === "app"
-                  ? isDarkMode 
-                    ? "border-blue-500 bg-gray-700/50" 
-                    : "border-blue-500 bg-blue-50"
-                  : isDarkMode 
-                    ? "border-gray-600 hover:border-gray-500" 
-                    : "border-gray-200 hover:border-gray-300"
-              }`}
-            >
-              <Smartphone className={`mb-3 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`} size={24} />
-              <h4 className={`font-semibold ${isDarkMode ? "text-white" : "text-gray-800"}`}>Authenticator App</h4>
-              <p className={`text-sm mt-1 ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>Use Google/Microsoft Authenticator</p>
-            </div>
+              {mfaStatus === 'enabled' ? 'Manage MFA' : 'Setup Google Authenticator'}
+            </button>
           </div>
-
-          <button className={`w-full py-3.5 rounded-xl font-semibold transition-all duration-300 ${
-            isDarkMode 
-              ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25" 
-              : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-blue-500/25"
-          }`}>
-            Setup {mfaMethod === "email" ? "Email" : "App"} MFA
-          </button>
         </div>
       )}
+
+      <MFASetup 
+        userId={user_id} 
+        isOpen={showMfaModal} 
+        onClose={() => setShowMfaModal(false)} 
+      />
 
       {/* ================= PASSWORD TAB ================= */}
       {activeTab === "password" && (
@@ -356,4 +330,3 @@ export default function Settings() {
     </div>
   );
 }
-
