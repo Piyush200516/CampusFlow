@@ -46,8 +46,7 @@ import CDCStudentForms from "./pages/CDC/StudentForms";
 import CDCSettings from "./pages/CDC/CDC_Settings";
 
 // Department Imports
-import DepartmentSidebar from "./pages/Department/Department_Sidebar";
-import DepartmentTopbar from "./pages/Department/Department_Topbar";
+import DepartmentLayout_fixed from "./pages/Department/Department_Layout_fixed.jsx";
 import DepartmentDashboard from "./pages/Department/Dashboard";
 import DepartmentStudentList from "./pages/Department/StudentList";
 import DepartmentAttendanceUpdate from "./pages/Department/AttendanceUpdate";
@@ -120,7 +119,7 @@ function App() {
         </Route>
 
         {/* Department Routes */}
-        <Route path="/department" element={<DeptLayout />}>
+        <Route path="/department" element={<DepartmentLayout_fixed />}>
           <Route path="dashboard" element={<DepartmentDashboard />} />
           <Route path="student-list" element={<DepartmentStudentList />} />
           <Route path="attendance-update" element={<DepartmentAttendanceUpdate />} />
@@ -154,21 +153,6 @@ function CDCLayout() {
       <CDCSidebar />
       <div style={{ flex: 1, backgroundColor: "#f9fafb", minHeight: "100vh" }}>
         <CDCTopbar />
-        <div style={{ padding: "20px" }}>
-          <Outlet />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ✅ Department Layout Component
-function DeptLayout() {
-  return (
-    <div style={{ display: "flex" }}>
-      <DepartmentSidebar />
-      <div style={{ flex: 1, backgroundColor: "#f9fafb", minHeight: "100vh" }}>
-        <DepartmentTopbar />
         <div style={{ padding: "20px" }}>
           <Outlet />
         </div>
