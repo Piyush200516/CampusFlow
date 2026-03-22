@@ -1,19 +1,53 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Building2, Users, ClipboardList, Settings, LogOut, ChevronLeft, ChevronRight, X, Briefcase, FileText, UserRound, GraduationCap } from "lucide-react";
 
-export default function CDCSidebar({ onClose }) {
+export default function CDCSidebar({ sidebarOpen, onClose }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("cdc-sidebar-collapsed") === "true";
+    }
+    return false;
+  });
+
 
   const handleLogout = () => {
     localStorage.removeItem("cdcEmail");
     localStorage.removeItem("userData");
     localStorage.removeItem("userRole");
+    localStorage.removeItem("cdc-sidebar-collapsed");
     navigate("/login");
     if (onClose) onClose();
   };
+
+  // Persist collapse state
+  useEffect(() => {
+    localStorage.setItem("cdc-sidebar-collapsed", collapsed.toString());
+  }, [collapsed]);
+
+  // Resize observer for smooth collapse on window resize
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(() => {
+      // Smooth transition on resize
+      setCollapsed(prev => prev);
+    });
+    resizeObserver.observe(document.body);
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && onClose) {
+        onClose();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
 
   const menuItems = [
     { name: "Dashboard", path: "/cdc/dashboard", icon: LayoutDashboard, color: "from-blue-500 to-indigo-600" },
@@ -72,8 +106,9 @@ export default function CDCSidebar({ onClose }) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 overflow-y-auto max-h-full scrollbar-thin scrollbar-thumb-gray-600/50 scrollbar-track-gray-800/30">
-        <div className="space-y-1.5 pt-4">
+      <nav className="flex-1 p-2 space-y-1">
+        <div className="space-y-0.5 pt-2 max-h-full overflow-hidden">
+
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -82,11 +117,11 @@ export default function CDCSidebar({ onClose }) {
                 key={item.path} 
                 to={item.path} 
                 onClick={() => { if (onClose) onClose(); }} 
-                className={`group flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 relative overflow-hidden shadow-sm hover:shadow-lg hover:shadow-${item.color.replace('from-', '').replace('to-', '')}/20 backdrop-blur-sm border border-transparent hover:border-white/20 ${
+                className={`group flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 relative overflow-hidden shadow-sm hover:shadow-md hover:shadow-${item.color.replace('from-', '').replace('to-', '')}/10 backdrop-blur-sm border border-transparent hover:border-white/20 ${
                   isActive 
-                    ? `bg-gradient-to-r ${item.color} text-white shadow-xl shadow-${item.color.replace('from-', '').replace('to-', '')}/30 ring-2 ring-white/30 scale-105` 
+                    ? `bg-gradient-to-r ${item.color} text-white shadow-lg shadow-${item.color.replace('from-', '').replace('to-', '')}/20 ring-1 ring-white/20 scale-105` 
                     : "text-gray-300 hover:text-white hover:bg-white/10"
-                } ${collapsed ? "justify-center" : ""}`}
+                } ${collapsed ? "justify-center" : ""}`} 
               >
                 <div className={`p-2 rounded-xl transition-all duration-300 flex-shrink-0 ${
                   isActive 

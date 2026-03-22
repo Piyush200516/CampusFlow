@@ -20,6 +20,7 @@
 - [✅] Step 1.8: Add JWT auth middleware to protected routes (/students, /api/student/profile)
 
 ### Phase 2: Improvements/UI (Next)
+- [x] Register.jsx: Fixed syntax errors, validation, UX ✅
 - [ ] Step 2.1: Protect more routes (analytics, attendance, submit-info) with authToken
 - [ ] Step 2.2: Fix dynamic column hacks in /api/student/submit-info (hardcode known columns)
 - [ ] Step 2.3: Add loading/error UI components

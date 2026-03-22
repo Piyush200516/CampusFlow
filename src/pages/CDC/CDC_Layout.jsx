@@ -9,7 +9,7 @@ export default function CDCLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Check for mobile viewport
+  // Check for mobile viewport and body scroll lock
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024);
@@ -19,6 +19,19 @@ export default function CDCLayout() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Body scroll lock when sidebar open on mobile
+  useEffect(() => {
+    if (sidebarOpen && isMobile) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [sidebarOpen, isMobile]);
+
+
   // Close sidebar when switching to desktop
   useEffect(() => {
     if (!isMobile && sidebarOpen) {
@@ -27,7 +40,8 @@ export default function CDCLayout() {
   }, [isMobile]);
 
   return (
-    <div className={`flex h-screen overflow-hidden ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}>
+    <div className={`flex h-[100dvh] overflow-hidden overscroll-contain ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}>
+
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
@@ -41,7 +55,8 @@ export default function CDCLayout() {
         fixed lg:static inset-y-0 left-0 z-50 transform transition-all duration-300 lg:transform-none h-full
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
-        <CDCSidebar onClose={() => setSidebarOpen(false)} />
+        <CDCSidebar sidebarOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
       </div>
 
       {/* Main Content */}
@@ -50,7 +65,7 @@ export default function CDCLayout() {
         <main 
           className={`flex-1 p-4 md:p-6 overflow-auto transition-colors duration-300 ${
             isDarkMode ? "bg-gray-900" : "bg-gray-50"
-          }`}
+          } overscroll-contain`}
         >
           <div className="max-w-7xl mx-auto">
             <Outlet />

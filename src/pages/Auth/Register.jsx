@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../../services/api";
 
-const Signup = () => {
+const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -19,40 +20,31 @@ const Signup = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError("");
+  };
+
+  const validateForm = () => {
+    if (!formData.full_name.trim()) return "Please enter full name";
+    if (!formData.email.trim()) return "Please enter email";
+    if (!/^[a-zA-Z0-9._%+-]+@acropolis\.in$/i.test(formData.email)) return "Please use college email (@acropolis.in)";
+    if (!formData.enrollment_no.trim()) return "Please enter enrollment number";
+    if (!formData.course) return "Please select course";
+    if (!formData.branch) return "Please select branch";
+    if (!formData.passing_year || formData.passing_year < 2024 || formData.passing_year > 2030) return "Enter valid passing year (2024-2030)";
+    if (formData.password.length < 8) return "Password must be at least 8 characters";
+    return "";
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validation
-    const fullNameRegex = /^[a-zA-Z\\s]+$/;
-    const emailRegex = /^[a-zA-Z0-9]+@acropolis\\.in$/;
-    const enrollmentRegex = /^[0-9]{4}[A-Z]{2}[a-zA-Z0-9]*$/;
-    const yearRegex = /^[0-9]{4}$/;
-    const passwordRegex = /(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#$%^&*])[a-zA-Z0-9@#$%^&*]{6,}/;
-
-    if (!fullNameRegex.test(formData.full_name.trim())) {
-      alert('Full Name: Only alphabets allowed');
-      return;
-    }
-    if (!emailRegex.test(formData.email.trim())) {
-      alert('Email: Must end with @acropolis.in (alphabets/numbers before)');
-      return;
-    }
-    if (!enrollmentRegex.test(formData.enrollment_no.trim())) {
-      alert('RGPV Enrollment: 4 digits + 2 alphabets + anything (e.g. 1234AB)');
-      return;
-    }
-    if (!yearRegex.test(formData.passing_year)) {
-      alert('Batch Year: 4 digits only (e.g. 2025)');
-      return;
-    }
-    if (!passwordRegex.test(formData.password)) {
-      alert('Password: 1 letter, 3 numbers, 1 special (@#$%^&*), min 6 chars');
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
     setLoading(true);
+    setError("");
 
     try {
       const response = await API.post("/api/register", formData);
@@ -60,15 +52,15 @@ const Signup = () => {
         alert("Registration Successful! Please login.");
         navigate("/");
       } else {
-        alert(response.data.message || response.data.error);
+        setError(response.data.message || response.data.error || "Registration failed");
       }
     } catch (error) {
-      if (error.response) {
-        alert(error.response.data.message || "Registration failed");
+      if (error.response?.data?.message) {
+        setError(error.response.data.message);
       } else if (error.request) {
-        alert("Server not responding. Please try again later.");
+        setError("Server not responding. Please try again later.");
       } else {
-        alert("An error occurred. Please try again.");
+        setError("An error occurred. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -99,6 +91,13 @@ const Signup = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Error Message */}
+          {error && (
+            <div className="p-4 bg-red-500/20 border border-red-500/30 rounded-xl text-red-100 text-sm">
+              {error}
+            </div>
+          )}
+
           {/* Full Name */}
           <div>
             <label className="block text-blue-100 mb-2 text-sm font-medium">Full Name</label>
@@ -152,9 +151,9 @@ const Signup = () => {
                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all appearance-none cursor-pointer"
                 required
               >
-                <option value="" className="text-gray-800">Select Course</option>
+                <option value="">Select Course</option>
                 {courses.map(c => (
-                  <option key={c} value={c} className="text-gray-800">{c}</option>
+                  <option key={c} value={c}>{c}</option>
                 ))}
               </select>
             </div>
@@ -167,9 +166,9 @@ const Signup = () => {
                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all appearance-none cursor-pointer"
                 required
               >
-                <option value="" className="text-gray-800">Select Branch</option>
+                <option value="">Select Branch</option>
                 {branches.map(b => (
-                  <option key={b} value={b} className="text-gray-800">{b}</option>
+                  <option key={b} value={b}>{b}</option>
                 ))}
               </select>
             </div>
@@ -184,6 +183,8 @@ const Signup = () => {
               value={formData.passing_year}
               onChange={handleChange}
               placeholder="e.g. 2025"
+              min="2024"
+              max="2030"
               className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-200/50 focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all"
               required
             />
@@ -198,8 +199,8 @@ const Signup = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Must contain 1 letter, 3 numbers and @"
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-200/50 focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all"
+                placeholder="Enter your password"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-200/50 focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all pr-12"
                 required
               />
               <button
@@ -214,7 +215,7 @@ const Signup = () => {
                   </svg>
                 ) : (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.07 10.07 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.83m0 0L21 21" />
                   </svg>
                 )}
               </button>
@@ -253,5 +254,5 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Register;
 
