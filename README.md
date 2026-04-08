@@ -15,8 +15,7 @@ A small portion 20-25% involved Vibe Coding to accelerate development, assist wi
 ---
 ## 🏥 MediTeach System Architecture
 
-<img src="![WhatsApp Image 2026-04-08 at 8 30 36 AM](https://github.com/user-attachments/assets/b14920b8-0eab-40b9-a976-659eae8cbe34)
-" width="800"/>
+<img src="https://github.com/user-attachments/assets/b14920b8-0eab-40b9-a976-659eae8cbe34" width="800"/>
 ---
 
 
