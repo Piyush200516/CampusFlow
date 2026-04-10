@@ -13,6 +13,13 @@ Approximately 75-80% of the codebase was written manually, demonstrating hands-o
 A small portion 20-25% involved Vibe Coding to accelerate development, assist with debugging, and improve development efficiency
 
 ---
+## 🏥 MediTeach System Architecture
+
+<img src="https://github.com/user-attachments/assets/b14920b8-0eab-40b9-a976-659eae8cbe34" width="800"/>
+---
+
+
+---
 
 ## 🚧 Project Status
 
