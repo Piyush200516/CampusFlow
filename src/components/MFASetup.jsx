@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import QRCode from 'qrcode.react';
+import QRCode from "react-qr-code";
 import API from '../services/api';
 import { Shield, CheckCircle, XCircle, Key, Zap } from 'lucide-react';
 
@@ -142,7 +142,7 @@ const MFASetup = ({ userId, isOpen, onClose }) => {
             <div className="space-y-6">
               <div className="text-center space-y-4">
                 <div className="inline-block p-6 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl shadow-xl border-4 border-dashed border-emerald-200">
-                  <QRCode value={qrDataUrl} size={220} />
+<QRCode value={qrDataUrl} />
                 </div>
                 <div className="bg-yellow-50 p-3 rounded-xl">
                   <p className="text-xs font-mono bg-white px-3 py-1 rounded text-gray-800">{secret}</p>
