@@ -35,19 +35,26 @@ const Register = () => {
     return "";
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('🚀 SUBMIT CLICKED! Form data:', formData);  // DEBUG
+    
     const validationError = validateForm();
     if (validationError) {
+      console.error('❌ Validation failed:', validationError);
       setError(validationError);
       return;
     }
+    console.log('✅ Validation passed');  // DEBUG
 
     setLoading(true);
-    setError("");
+    setError(""); 
 
     try {
+      console.log('📡 Sending to backend...');  // DEBUG
       const response = await API.post("/api/register", formData);
+      console.log('✅ Backend response:', response.data);  // DEBUG
+
       if (response.data.message === "Student Registered Successfully") {
         alert("Registration Successful! Please login.");
         navigate("/");
