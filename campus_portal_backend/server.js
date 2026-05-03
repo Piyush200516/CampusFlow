@@ -7,7 +7,7 @@ const speakeasy = require("speakeasy");
 const QRCode = require("qrcode");
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:5173' })); // Frontend Vite dev server
 app.use(express.json({ limit: '10mb' }));
 
 const JWT_SECRET = process.env.JWT_SECRET || "campusflow_supersecret_2024_change_this_in_prod";
@@ -62,11 +62,13 @@ app.post("/api/register", async (req, res) => {
 });
 
 // ================== LOGIN ===================
-app.post("/api/login", (req, res) => {
-  const { email, password, role } = req.body;
-  const sql = "SELECT * FROM users WHERE email=? AND role=?";
-  db.query(sql, [email, role], async (err, results) => {
-    if(err) return res.status(500).json({ message: err });
+app.post("/api/login", async (req, res) => {
+  try {
+    const dbPromise = db.promise();
+    const { email, password, role } = req.body;
+    const sql = "SELECT * FROM users WHERE email=? AND role=?";
+    const [results] = await dbPromise.query(sql, [email, role]);
+    
     if(results.length === 0) return res.status(404).json({ message: "User not found" });
 
     const user = results[0];
@@ -88,7 +90,10 @@ app.post("/api/login", (req, res) => {
       const token = jwt.sign({ id: user.id, role: user.role, department_id: user.department_id }, JWT_SECRET, { expiresIn: "8h" });
       res.json({ message: "Login Successful", token, role: user.role, department_id: user.department_id, user });
     }
-  });
+  } catch (err) {
+    console.error('Login error:', err);
+    res.status(500).json({ message: err.message || 'Login failed' });
+  }
 });
 
 // ================== MFA ROUTES ===================

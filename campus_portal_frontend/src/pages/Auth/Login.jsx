@@ -33,30 +33,7 @@ const Login = () => {
       return;
     }
 
-    const numberCount = (password.match(/\d/g) || []).length;
-    const hasCapital = /[A-Z]/.test(password);
-    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-    if (password.length < 6) {
-      alert("Password must be at least 6 characters long");
-      setLoading(false);
-      return;
-    }
-    if (numberCount < 3) {
-      alert("Password must contain at least 3 numbers");
-      setLoading(false);
-      return;
-    }
-    if (!hasCapital) {
-      alert("Password must contain at least 1 capital letter");
-      setLoading(false);
-      return;
-    }
-    if (!hasSpecial) {
-      alert("Password must contain at least 1 special character");
-      setLoading(false);
-      return;
-    }
 
     try {
       const response = await API.post("/api/login", { email, password, role });
@@ -70,6 +47,7 @@ const Login = () => {
 
       // Normal login success
       const user = response.data.user;
+      localStorage.setItem("token", response.data.token);
       if (role === "cdc") localStorage.setItem("cdcEmail", email);
       else if (role === "fee") localStorage.setItem("feeEmail", email);
       else if (role === "department") localStorage.setItem("departmentEmail", email);
@@ -100,6 +78,7 @@ const Login = () => {
       const response = await API.post("/api/mfa/login-verify", { temp_token: tempToken, token: otp });
       
       const user = response.data.user;
+      localStorage.setItem("token", response.data.token);
       const role = response.data.role;
       if (role === "cdc") localStorage.setItem("cdcEmail", email);
       else if (role === "fee") localStorage.setItem("feeEmail", email);
