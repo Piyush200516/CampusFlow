@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("ATTENDANCE_DATABASE_URL")
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum SessionType {
+  LECTURE
+  LAB
+  SEMINAR
+  EXAM
+  WORKSHOP
+}
+
+model Subject {
+  id            String              @id @default(uuid())
+  code          String              @unique
+  name          String
+  departmentId  String
+  courseId      String?
+  semester      Int?
+  credits       Int?
+  isActive      Boolean             @default(true)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  deletedAt     DateTime?
+  sessions      AttendanceSession[]
+
+  @@index([departmentId, courseId, semester])
+  @@index([name])
+  @@index([isActive, deletedAt])
+  @@map("subjects")
+}
+
+model AttendanceSession {
+  id             String              @id @default(uuid())
+  subjectId      String
+  facultyId      String
+  departmentId   String
+  courseId       String?
+  semester       Int
+  section        String?
+  sessionType    SessionType         @default(LECTURE)
+  scheduledAt    DateTime
+  durationMinutes Int                @default(60)
+  topic          String?
+  notes          String?
+  lockedAt       DateTime?
+  deletedAt      DateTime?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  subject        Subject             @relation(fields: [subjectId], references: [id])
+  records        AttendanceRecord[]
+
+  @@index([facultyId, scheduledAt])
+  @@index([departmentId, courseId, semester, section])
+  @@index([scheduledAt])
+  @@index([deletedAt])
+  @@map("attendance_sessions")
+}
+
+model AttendanceRecord {
+  id          String             @id @default(uuid())
+  sessionId   String
+  studentId   String
+  status      AttendanceStatus
+  markedById  String
+  markedAt    DateTime           @default(now())
+  remarks     String?
+  deletedAt   DateTime?
+  session     AttendanceSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, studentId])
+  @@index([studentId, markedAt])
+  @@index([status])
+  @@index([deletedAt])
+  @@map("attendance_records")
+}
+
+model AttendanceAggregate {
+  id              String    @id @default(uuid())
+  studentId       String
+  subjectId       String?
+  semester        Int
+  totalSessions   Int       @default(0)
+  presentCount    Int       @default(0)
+  absentCount     Int       @default(0)
+  lateCount       Int       @default(0)
+  excusedCount    Int       @default(0)
+  percentage      Decimal   @db.Decimal(5, 2)
+  calculatedAt    DateTime  @default(now())
+
+  @@unique([studentId, subjectId, semester])
+  @@index([studentId, semester])
+  @@index([percentage])
+  @@map("attendance_aggregates")
+}
+
+model AttendanceReport {
+  id            String    @id @default(uuid())
+  studentId     String?
+  departmentId  String?
+  courseId      String?
+  semester      Int?
+  generatedById String
+  reportUrl     String?
+  payload        Json
+  createdAt     DateTime  @default(now())
+
+  @@index([studentId])
+  @@index([departmentId, courseId, semester])
+  @@map("attendance_reports")
+}

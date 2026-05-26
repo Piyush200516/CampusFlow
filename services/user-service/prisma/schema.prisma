@@ -1,0 +1,279 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("USER_DATABASE_URL")
+}
+
+enum UserRole {
+  STUDENT
+  FACULTY
+  HOD
+  ADMIN
+  CDC
+  FEE_DEPARTMENT
+  EXAM_CELL
+  LIBRARY
+  SUPER_ADMIN
+}
+
+enum Gender {
+  FEMALE
+  MALE
+  NON_BINARY
+  PREFER_NOT_TO_SAY
+}
+
+enum EnrollmentStatus {
+  APPLIED
+  ACTIVE
+  ON_HOLD
+  GRADUATED
+  TRANSFERRED
+  DROPPED
+}
+
+enum FacultyStatus {
+  ACTIVE
+  ON_LEAVE
+  RESIGNED
+  RETIRED
+}
+
+enum TCRequestStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  ISSUED
+}
+
+model Department {
+  id          String    @id @default(uuid())
+  collegeId   String?
+  code        String    @unique
+  name        String
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  college     College?  @relation(fields: [collegeId], references: [id])
+  students    Student[]
+  faculty     Faculty[]
+  courses     Course[]
+
+  @@index([collegeId, isActive])
+  @@index([name])
+  @@index([deletedAt])
+  @@map("departments")
+}
+
+model Course {
+  id            String      @id @default(uuid())
+  departmentId  String
+  code          String      @unique
+  name          String
+  description   String?
+  durationYears Int
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+  department    Department  @relation(fields: [departmentId], references: [id])
+  students      Student[]
+
+  @@index([departmentId])
+  @@index([name])
+  @@index([isActive, deletedAt])
+  @@map("courses")
+}
+
+model Student {
+  id                 String            @id @default(uuid())
+  authUserId         String            @unique
+  admissionNumber    String            @unique
+  rollNumber         String?           @unique
+  firstName          String
+  middleName         String?
+  lastName           String
+  email              String            @unique
+  phone              String?
+  gender             Gender?
+  dateOfBirth        DateTime?
+  addressLine1       String?
+  addressLine2       String?
+  city               String?
+  state              String?
+  postalCode         String?
+  country            String?           @default("India")
+  guardianName       String?
+  guardianPhone      String?
+  departmentId       String
+  courseId           String
+  semester           Int
+  section            String?
+  batchYear          Int
+  enrollmentStatus   EnrollmentStatus  @default(ACTIVE)
+  profilePhotoUrl    String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  deletedAt          DateTime?
+  department         Department        @relation(fields: [departmentId], references: [id])
+  course             Course            @relation(fields: [courseId], references: [id])
+  transferRequests   TransferCertificateRequest[]
+
+  @@index([departmentId, courseId])
+  @@index([batchYear, semester, section])
+  @@index([enrollmentStatus])
+  @@index([firstName, lastName])
+  @@index([email])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@map("students")
+}
+
+model Faculty {
+  id              String         @id @default(uuid())
+  authUserId      String         @unique
+  employeeCode    String         @unique
+  firstName       String
+  middleName      String?
+  lastName        String
+  email           String         @unique
+  phone           String?
+  designation     String
+  departmentId    String
+  status          FacultyStatus  @default(ACTIVE)
+  joinedAt        DateTime?
+  profilePhotoUrl String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  deletedAt       DateTime?
+  department      Department     @relation(fields: [departmentId], references: [id])
+
+  @@index([departmentId, status])
+  @@index([firstName, lastName])
+  @@index([email])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@map("faculty")
+}
+
+model AdminProfile {
+  id              String    @id @default(uuid())
+  authUserId      String    @unique
+  employeeCode    String?   @unique
+  firstName       String
+  lastName        String
+  email           String    @unique
+  phone           String?
+  designation     String?
+  profilePhotoUrl String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  @@index([email])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@map("admin_profiles")
+}
+
+model Permission {
+  id          String            @id @default(uuid())
+  key         String            @unique
+  name        String
+  description String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  deletedAt   DateTime?
+  roleLinks   RolePermission[]
+
+  @@index([key])
+  @@index([deletedAt])
+  @@map("permissions")
+}
+
+model RolePermission {
+  id            String      @id @default(uuid())
+  role          UserRole
+  permissionId  String
+  createdAt     DateTime    @default(now())
+  permission    Permission  @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([role, permissionId])
+  @@map("role_permissions")
+}
+
+model TransferCertificateRequest {
+  id              String           @id @default(uuid())
+  studentId       String
+  reason          String
+  status          TCRequestStatus  @default(SUBMITTED)
+  requestedAt     DateTime         @default(now())
+  reviewedById    String?
+  reviewedAt      DateTime?
+  issuedDocumentUrl String?
+  remarks         String?
+  student         Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId, status])
+  @@map("transfer_certificate_requests")
+}
+
+model College {
+  id          String       @id @default(uuid())
+  code        String       @unique
+  name        String
+  address     String?
+  city        String?
+  state       String?
+  country     String       @default("India")
+  website     String?
+  logoUrl     String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
+  departments Department[]
+
+  @@index([name])
+  @@index([isActive, deletedAt])
+  @@map("colleges")
+}
+
+model AcademicYear {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  startsAt    DateTime
+  endsAt      DateTime
+  isCurrent   Boolean   @default(false)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@index([isCurrent, isActive])
+  @@index([startsAt, endsAt])
+  @@map("academic_years")
+}
+
+model SystemSetting {
+  id          String    @id @default(uuid())
+  key         String    @unique
+  value       Json
+  description String?
+  isSecret    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@index([key])
+  @@index([deletedAt])
+  @@map("system_settings")
+}

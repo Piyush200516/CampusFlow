@@ -1,0 +1,194 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("EVENT_DATABASE_URL")
+}
+
+enum EventType {
+  COLLEGE_EVENT
+  PLACEMENT_DRIVE
+  INTERNSHIP
+  WORKSHOP
+  SEMINAR
+  HACKATHON
+}
+
+enum EventStatus {
+  DRAFT
+  PENDING_APPROVAL
+  PUBLISHED
+  CANCELLED
+  COMPLETED
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  WAITLISTED
+  CANCELLED
+  ATTENDED
+  NO_SHOW
+  SELECTED
+  REJECTED
+}
+
+enum InterviewRoundStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+enum OfferStatus {
+  DRAFT
+  RELEASED
+  ACCEPTED
+  DECLINED
+  WITHDRAWN
+}
+
+model Company {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  website     String?
+  industry    String?
+  logoUrl     String?
+  contactName String?
+  contactEmail String?
+  contactPhone String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  drives      Event[]
+  offers      OfferLetter[]
+
+  @@index([name])
+  @@index([industry])
+  @@index([deletedAt])
+  @@map("placement_companies")
+}
+
+model Event {
+  id                String          @id @default(uuid())
+  type              EventType
+  status            EventStatus     @default(DRAFT)
+  title             String
+  slug              String          @unique
+  description       String
+  venue             String?
+  mode              String          @default("OFFLINE")
+  startsAt          DateTime
+  endsAt            DateTime?
+  registrationOpenAt DateTime?
+  registrationCloseAt DateTime?
+  capacity          Int?
+  companyId         String?
+  eligibility       Json?
+  packageDetails    Json?
+  createdById       String
+  approvedById      String?
+  approvedAt        DateTime?
+  deletedAt         DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  company           Company?        @relation(fields: [companyId], references: [id])
+  registrations     EventRegistration[]
+  interviewRounds   InterviewRound[]
+  offers            OfferLetter[]
+
+  @@index([type, status])
+  @@index([startsAt])
+  @@index([companyId])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@map("placement_drives")
+}
+
+model EventRegistration {
+  id            String              @id @default(uuid())
+  eventId       String
+  studentId     String
+  status        RegistrationStatus  @default(REGISTERED)
+  resumeUrl     String?
+  answers       Json?
+  registeredAt  DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  deletedAt     DateTime?
+  event         Event               @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  interviewRounds InterviewRound[]
+  offers        OfferLetter[]
+
+  @@unique([eventId, studentId])
+  @@index([studentId, status])
+  @@index([registeredAt])
+  @@index([deletedAt])
+  @@map("applications")
+}
+
+model EventAnalyticsSnapshot {
+  id            String    @id @default(uuid())
+  eventId       String
+  totalRegistrations Int
+  attendedCount Int      @default(0)
+  selectedCount Int      @default(0)
+  waitlistedCount Int    @default(0)
+  metadata      Json?
+  capturedAt    DateTime @default(now())
+
+  @@index([eventId, capturedAt])
+  @@map("event_analytics_snapshots")
+}
+
+model InterviewRound {
+  id              String               @id @default(uuid())
+  eventId         String
+  applicationId   String?
+  name            String
+  sequence        Int
+  status          InterviewRoundStatus @default(SCHEDULED)
+  scheduledAt     DateTime?
+  mode            String?
+  panel           Json?
+  feedback        String?
+  score           Decimal?             @db.Decimal(5, 2)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  deletedAt       DateTime?
+  event           Event                @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  application     EventRegistration?   @relation(fields: [applicationId], references: [id])
+
+  @@index([eventId, sequence])
+  @@index([applicationId])
+  @@index([scheduledAt])
+  @@index([deletedAt])
+  @@map("interview_rounds")
+}
+
+model OfferLetter {
+  id              String              @id @default(uuid())
+  eventId         String
+  companyId       String
+  applicationId   String
+  studentId       String
+  status          OfferStatus         @default(DRAFT)
+  roleTitle       String
+  compensation    Decimal?            @db.Decimal(12, 2)
+  currency        String              @default("INR")
+  documentUrl     String?
+  releasedAt      DateTime?
+  respondedAt     DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  deletedAt       DateTime?
+  event           Event               @relation(fields: [eventId], references: [id])
+  company         Company             @relation(fields: [companyId], references: [id])
+  application     EventRegistration   @relation(fields: [applicationId], references: [id])
+
+  @@index([studentId, status])
+  @@index([companyId])
+  @@index([eventId])
+  @@index([deletedAt])
+  @@map("offer_letters")
+}

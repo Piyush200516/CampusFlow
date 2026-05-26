@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("LOGS_DATABASE_URL")
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+  PUSH
+  IN_APP
+}
+
+enum NotificationStatus {
+  QUEUED
+  PROCESSING
+  SENT
+  FAILED
+  CANCELLED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  EXPORT
+  IMPORT
+  APPROVE
+  REJECT
+  PAYMENT
+}
+
+model NotificationTemplate {
+  id          String                @id @default(uuid())
+  key         String                @unique
+  channel     NotificationChannel
+  subject     String?
+  body        String
+  variables   String[]
+  isActive    Boolean               @default(true)
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  deletedAt   DateTime?
+  messages    NotificationMessage[]
+
+  @@index([channel, isActive])
+  @@index([deletedAt])
+  @@map("notification_templates")
+}
+
+model NotificationMessage {
+  id             String                @id @default(uuid())
+  templateId     String?
+  recipientUserId String?
+  recipientEmail String?
+  recipientPhone String?
+  channel        NotificationChannel
+  status         NotificationStatus    @default(QUEUED)
+  subject        String?
+  body           String
+  payload        Json?
+  provider       String?
+  providerMessageId String?
+  failureReason  String?
+  scheduledAt    DateTime?
+  sentAt         DateTime?
+  readAt         DateTime?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  deletedAt      DateTime?
+  template       NotificationTemplate? @relation(fields: [templateId], references: [id])
+
+  @@index([recipientUserId, status])
+  @@index([channel, status, scheduledAt])
+  @@index([createdAt])
+  @@index([readAt])
+  @@index([deletedAt])
+  @@map("notification_messages")
+}
+
+model AuditLog {
+  id          String       @id @default(uuid())
+  service     String
+  actorUserId String?
+  actorRole   String?
+  action      AuditAction
+  entityType  String
+  entityId    String?
+  requestId   String?
+  ipAddress   String?
+  userAgent   String?
+  before      Json?
+  after       Json?
+  metadata    Json?
+  createdAt   DateTime     @default(now())
+
+  @@index([service, createdAt])
+  @@index([actorUserId, createdAt])
+  @@index([entityType, entityId])
+  @@index([requestId])
+  @@index([action, createdAt])
+  @@map("audit_logs")
+}
+
+model IntegrationEventLog {
+  id            String    @id @default(uuid())
+  topic         String
+  partition     Int?
+  offset        String?
+  key           String?
+  eventType     String
+  payload       Json
+  processedAt   DateTime?
+  failedAt      DateTime?
+  failureReason String?
+  createdAt     DateTime  @default(now())
+
+  @@unique([topic, partition, offset])
+  @@index([eventType, createdAt])
+  @@map("integration_event_logs")
+}
+
+model Announcement {
+  id            String    @id @default(uuid())
+  title         String
+  body          String
+  audienceRoles String[]
+  departmentId  String?
+  publishedById String
+  publishedAt   DateTime?
+  expiresAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  @@index([departmentId, publishedAt])
+  @@index([expiresAt])
+  @@index([deletedAt])
+  @@map("announcements")
+}

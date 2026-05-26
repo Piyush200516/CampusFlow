@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DOCUMENT_DATABASE_URL")
+}
+
+enum DocumentOwnerType {
+  STUDENT
+  FACULTY
+  ADMIN
+  DEPARTMENT
+}
+
+enum DocumentStatus {
+  UPLOADED
+  PENDING_VERIFICATION
+  VERIFIED
+  REJECTED
+  ARCHIVED
+}
+
+enum CertificateType {
+  BONAFIDE
+  TRANSFER_CERTIFICATE
+  ID_CARD
+  ADMIT_CARD
+  FEE_RECEIPT
+  CUSTOM
+}
+
+enum CertificateStatus {
+  REQUESTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  GENERATED
+  ISSUED
+}
+
+enum JobStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model Document {
+  id              String            @id @default(uuid())
+  ownerType       DocumentOwnerType
+  ownerId         String
+  uploadedById    String
+  status          DocumentStatus    @default(UPLOADED)
+  documentType    String
+  originalName    String
+  storageKey      String            @unique
+  mimeType        String
+  sizeBytes       Int
+  checksum        String?
+  metadata        Json?
+  verifiedById    String?
+  verifiedAt      DateTime?
+  rejectionReason String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  deletedAt       DateTime?
+
+  @@index([ownerType, ownerId, status])
+  @@index([documentType, status])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@map("documents")
+}
+
+model CertificateRequest {
+  id            String            @id @default(uuid())
+  requesterId   String
+  ownerId       String
+  type          CertificateType
+  status        CertificateStatus @default(REQUESTED)
+  reason        String?
+  payload       Json?
+  reviewedById  String?
+  reviewedAt    DateTime?
+  generatedFileUrl String?
+  issuedAt      DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  deletedAt     DateTime?
+
+  @@index([ownerId, type, status])
+  @@index([requesterId, createdAt])
+  @@index([deletedAt])
+  @@map("certificate_requests")
+}
+
+model FileJob {
+  id          String    @id @default(uuid())
+  type        String
+  status      JobStatus @default(QUEUED)
+  requestedById String
+  input       Json?
+  outputUrl   String?
+  failureReason String?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@index([type, status, createdAt])
+  @@index([requestedById, createdAt])
+  @@index([deletedAt])
+  @@map("file_jobs")
+}

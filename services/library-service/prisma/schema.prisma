@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("LIBRARY_DATABASE_URL")
+}
+
+enum BookCopyStatus {
+  AVAILABLE
+  ISSUED
+  LOST
+  DAMAGED
+  MAINTENANCE
+}
+
+enum BookIssueStatus {
+  ISSUED
+  RETURNED
+  OVERDUE
+  LOST
+}
+
+enum FineStatus {
+  PENDING
+  PAID
+  WAIVED
+}
+
+model LibraryBook {
+  id            String      @id @default(uuid())
+  isbn          String?
+  title         String
+  subtitle      String?
+  authors       String[]
+  publisher     String?
+  publishedYear Int?
+  category      String?
+  keywords      String[]
+  totalCopies   Int         @default(0)
+  availableCopies Int       @default(0)
+  shelfLocation String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+  copies        BookCopy[]
+
+  @@index([isbn])
+  @@index([title])
+  @@index([category])
+  @@index([availableCopies])
+  @@index([deletedAt])
+  @@map("library_books")
+}
+
+model BookCopy {
+  id          String         @id @default(uuid())
+  bookId      String
+  accessionNo String         @unique
+  barcode     String?        @unique
+  status      BookCopyStatus @default(AVAILABLE)
+  acquiredAt  DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  deletedAt   DateTime?
+  book        LibraryBook    @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  issues      BookIssue[]
+
+  @@index([bookId, status])
+  @@index([deletedAt])
+  @@map("book_copies")
+}
+
+model BookIssue {
+  id          String          @id @default(uuid())
+  bookCopyId  String
+  studentId   String?
+  facultyId   String?
+  issuedById  String
+  returnedById String?
+  status      BookIssueStatus @default(ISSUED)
+  issuedAt    DateTime        @default(now())
+  dueAt       DateTime
+  returnedAt  DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  deletedAt   DateTime?
+  copy        BookCopy        @relation(fields: [bookCopyId], references: [id])
+  fines       LibraryFine[]
+
+  @@index([studentId, status])
+  @@index([facultyId, status])
+  @@index([dueAt, status])
+  @@index([deletedAt])
+  @@map("book_issues")
+}
+
+model LibraryFine {
+  id          String     @id @default(uuid())
+  issueId     String
+  amount      Decimal    @db.Decimal(10, 2)
+  status      FineStatus @default(PENDING)
+  reason      String
+  paidAt      DateTime?
+  waivedById  String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime?
+  issue       BookIssue  @relation(fields: [issueId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([deletedAt])
+  @@map("library_fines")
+}
+
+model BookReservation {
+  id          String    @id @default(uuid())
+  bookId      String
+  studentId   String?
+  facultyId   String?
+  expiresAt   DateTime
+  fulfilledAt DateTime?
+  cancelledAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@index([bookId, createdAt])
+  @@index([studentId, createdAt])
+  @@index([facultyId, createdAt])
+  @@index([expiresAt])
+  @@index([deletedAt])
+  @@map("book_reservations")
+}

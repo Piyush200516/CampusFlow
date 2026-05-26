@@ -1,0 +1,195 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("FEE_DATABASE_URL")
+}
+
+enum FeeType {
+  TUITION
+  HOSTEL
+  TRANSPORT
+  EXAM
+  LIBRARY
+  LAB
+  MISCELLANEOUS
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum PaymentStatus {
+  INITIATED
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  UPI
+  NET_BANKING
+  WALLET
+  BANK_TRANSFER
+}
+
+model FeePlan {
+  id            String     @id @default(uuid())
+  name          String
+  departmentId  String?
+  courseId      String?
+  semester      Int?
+  batchYear     Int?
+  feeType       FeeType
+  amount        Decimal    @db.Decimal(12, 2)
+  currency      String     @default("INR")
+  dueDays       Int        @default(30)
+  isActive      Boolean    @default(true)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  deletedAt     DateTime?
+  lineItems     FeeLineItem[]
+  installments  FeeInstallment[]
+
+  @@index([departmentId, courseId, semester, batchYear])
+  @@index([feeType, isActive])
+  @@index([deletedAt])
+  @@map("fee_plans")
+}
+
+model FeeInstallment {
+  id          String    @id @default(uuid())
+  feePlanId   String
+  name        String
+  sequence    Int
+  amount      Decimal   @db.Decimal(12, 2)
+  dueAt       DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  feePlan     FeePlan   @relation(fields: [feePlanId], references: [id], onDelete: Cascade)
+
+  @@unique([feePlanId, sequence])
+  @@index([dueAt])
+  @@index([deletedAt])
+  @@map("fee_installments")
+}
+
+model Invoice {
+  id             String         @id @default(uuid())
+  invoiceNumber  String         @unique
+  studentId      String
+  status         InvoiceStatus  @default(ISSUED)
+  subtotal       Decimal        @db.Decimal(12, 2)
+  discount       Decimal        @default(0) @db.Decimal(12, 2)
+  taxAmount      Decimal        @default(0) @db.Decimal(12, 2)
+  totalAmount    Decimal        @db.Decimal(12, 2)
+  paidAmount     Decimal        @default(0) @db.Decimal(12, 2)
+  currency       String         @default("INR")
+  issuedAt       DateTime       @default(now())
+  dueAt          DateTime
+  paidAt         DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  deletedAt      DateTime?
+  lineItems      FeeLineItem[]
+  payments       Payment[]
+  duesAlerts     DuesAlert[]
+  receipts       Receipt[]
+
+  @@index([studentId, status])
+  @@index([dueAt])
+  @@index([issuedAt])
+  @@index([deletedAt])
+  @@map("invoices")
+}
+
+model FeeLineItem {
+  id          String    @id @default(uuid())
+  invoiceId   String
+  feePlanId   String?
+  feeType     FeeType
+  description String
+  amount      Decimal   @db.Decimal(12, 2)
+  createdAt   DateTime  @default(now())
+  invoice     Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  feePlan     FeePlan?  @relation(fields: [feePlanId], references: [id])
+
+  @@index([invoiceId])
+  @@map("fee_line_items")
+}
+
+model Payment {
+  id                    String         @id @default(uuid())
+  invoiceId             String
+  studentId             String
+  provider              String
+  providerPaymentId     String?        @unique
+  providerOrderId       String?
+  providerSignature     String?
+  method                PaymentMethod?
+  status                PaymentStatus  @default(INITIATED)
+  amount                Decimal        @db.Decimal(12, 2)
+  currency              String         @default("INR")
+  failureReason         String?
+  receiptUrl            String?
+  paidAt                DateTime?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  deletedAt             DateTime?
+  invoice               Invoice        @relation(fields: [invoiceId], references: [id])
+  receipts              Receipt[]
+
+  @@index([studentId, status])
+  @@index([invoiceId])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@map("payments")
+}
+
+model Receipt {
+  id            String    @id @default(uuid())
+  receiptNumber String    @unique
+  invoiceId     String
+  paymentId     String
+  studentId     String
+  amount        Decimal   @db.Decimal(12, 2)
+  currency      String    @default("INR")
+  receiptUrl    String?
+  issuedAt      DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  invoice       Invoice   @relation(fields: [invoiceId], references: [id])
+  payment       Payment   @relation(fields: [paymentId], references: [id])
+
+  @@index([studentId, issuedAt])
+  @@index([invoiceId])
+  @@index([paymentId])
+  @@index([deletedAt])
+  @@map("receipts")
+}
+
+model DuesAlert {
+  id          String    @id @default(uuid())
+  studentId   String
+  invoiceId   String
+  message     String
+  sentAt      DateTime?
+  createdAt   DateTime  @default(now())
+  invoice     Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([studentId, sentAt])
+  @@map("dues_alerts")
+}
